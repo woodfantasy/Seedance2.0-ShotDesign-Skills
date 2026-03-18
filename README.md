@@ -1,7 +1,7 @@
-# 🎬 Seedance Shot Design — 即梦 2.0 专业分镜提示词工程师
+# 🎬 Seedance Shot Design — 专业分镜提示词工程师
 
 [![版本](https://img.shields.io/badge/version-1.0.0-blue.svg)]()
-[![协议](https://img.shields.io/badge/license-MIT-green.svg)]()
+[![协议](https://img.shields.io/badge/license-Apache_2.0-green.svg)](LICENSE)
 [![平台](https://img.shields.io/badge/platform-Seedance_2.0-purple.svg)]()
 
 > 将你模糊的视频创意，一键转化为即梦 Seedance 2.0 可用的**电影级视频提示词**。
@@ -81,7 +81,7 @@ seedance-shot-design/
 └── references/
     ├── cinematography.md        # 运镜与焦段专业词典
     ├── director-styles.md       # 导演风格参数化映射库
-    ├── seedance-specs.md        # 即梦2.0官方平台规范
+    ├── seedance-specs.md        # Seedance 2.0官方平台规范
     ├── quality-anchors.md       # 品质锚定与后期处理词库
     ├── scenarios.md             # 垂直场景模板库（10大场景）
     └── audio-tags.md            # 音频与音效标签规范
@@ -158,4 +158,4 @@ python -m pytest scripts/test_validate.py -v
 
 ## 📄 许可
 
-MIT License
+Apache-2.0 License
