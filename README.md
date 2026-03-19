@@ -1,7 +1,7 @@
 # 🎬 Seedance Shot Design — 专业分镜提示词工程师
 
 [![版本](https://img.shields.io/badge/version-1.0.0-blue.svg)]()
-[![协议](https://img.shields.io/badge/license-Apache_2.0-green.svg)](LICENSE)
+[![协议](https://img.shields.io/badge/license-MIT--0-green.svg)](LICENSE)
 [![平台](https://img.shields.io/badge/platform-Seedance_2.0-purple.svg)]()
 
 > 将你模糊的视频创意，一键转化为即梦 Seedance 2.0 可用的**电影级视频提示词**。
@@ -46,7 +46,7 @@ Skill 会自动激活并按 5 步工作流生成提示词：
 2. **视觉诊断** — 选定镜头语言与导演风格
 3. **六要素组装** — 按公式精准撰写
 4. **强制校验** — 运行 Python 脚本进行质量审查
-5. **专业交付** — 导演阐述 + 中英文提示词
+5. **专业交付** — 导演阐述 + 完整提示词
 
 ### 3. 更多示例
 
@@ -100,15 +100,12 @@ python scripts/validate_prompt.py --text "你的提示词"
 # 从文件校验
 python scripts/validate_prompt.py --file prompt.txt
 
-# 指定语言
-python scripts/validate_prompt.py --text "your prompt" --lang en
-
 # JSON格式输出（便于程序化处理）
 python scripts/validate_prompt.py --text "提示词" --json
 ```
 
 **校验项：**
-- ❌ 字数超标（中文>500字符/英文>1000词）
+- ❌ 字数超标（>500字符）
 - ❌ 缺少专业运镜术语
 - ❌ 资产引用超限（图片>9/视频>3/音频>3/总计>12）
 - ⚠️ 时序切片缺失或重叠
@@ -158,4 +155,4 @@ python -m pytest scripts/test_validate.py -v
 
 ## 📄 许可
 
-Apache-2.0 License
+MIT-0 (MIT No Attribution) License
