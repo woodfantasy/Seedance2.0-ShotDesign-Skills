@@ -5,7 +5,6 @@ Seedance 2.0 提示词工业级校验脚本
 
 用法:
     python scripts/validate_prompt.py --text "你的提示词内容"
-    python scripts/validate_prompt.py --text "your prompt" --lang en
     python scripts/validate_prompt.py --file prompt.txt
 """
 
@@ -15,27 +14,15 @@ import sys
 import json
 
 
-def detect_language(text):
-    """自动检测提示词语言（中文/英文）"""
-    chinese_chars = sum(1 for c in text if '\u4e00' <= c <= '\u9fff')
-    total_chars = len(text.strip())
-    if total_chars == 0:
-        return "cn"
-    ratio = chinese_chars / total_chars
-    return "cn" if ratio > 0.15 else "en"
+# Seedance 为中国自研模型，提示词统一使用中文，不再区分语言
 
 
-def check_length(text, lang):
-    """检查提示词长度是否合规"""
+def check_length(text):
+    """检查提示词长度是否合规（中文≤500字符）"""
     results = []
-    if lang == "cn":
-        length = len(text)
-        max_len = 500
-        unit = "字符"
-    else:
-        length = len(text.split())
-        max_len = 1000
-        unit = "词"
+    length = len(text)
+    max_len = 500
+    unit = "字符"
 
     if length > max_len:
         results.append({
@@ -304,13 +291,10 @@ def check_conflict(text):
     return results
 
 
-def validate_prompt(text, lang=None):
+def validate_prompt(text):
     """执行完整校验流程"""
-    if lang is None or lang == "auto":
-        lang = detect_language(text)
-
     all_results = []
-    all_results.extend(check_length(text, lang))
+    all_results.extend(check_length(text))
     all_results.extend(check_time_slices(text))
     all_results.extend(check_camera_language(text))
     all_results.extend(check_cgi_words(text))
@@ -323,7 +307,7 @@ def validate_prompt(text, lang=None):
     infos = [r for r in all_results if r["level"] == "info"]
 
     return {
-        "language": lang,
+        "language": "cn",
         "passed": len(errors) == 0,
         "summary": {
             "errors": len(errors),
@@ -342,7 +326,7 @@ def format_report(validation):
     lines.append("=" * 50)
     lines.append("  Seedance 2.0 提示词审查报告")
     lines.append("=" * 50)
-    lines.append(f"  语言: {'中文' if validation['language'] == 'cn' else '英文'}")
+    lines.append("  语言: 中文")
     lines.append("")
 
     icon_map = {
@@ -379,9 +363,7 @@ def main():
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument("--text", type=str, help="提示词文本内容")
     group.add_argument("--file", type=str, help="包含提示词的文件路径")
-    parser.add_argument("--lang", type=str, default="auto",
-                        choices=["auto", "cn", "en"],
-                        help="语言 (默认自动检测)")
+
     parser.add_argument("--json", action="store_true",
                         help="以 JSON 格式输出结果")
 
@@ -393,7 +375,7 @@ def main():
     else:
         text = args.text
 
-    validation = validate_prompt(text, args.lang)
+    validation = validate_prompt(text)
 
     if args.json:
         print(json.dumps(validation, ensure_ascii=False, indent=2))

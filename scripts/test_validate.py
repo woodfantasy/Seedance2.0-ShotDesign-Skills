@@ -10,57 +10,32 @@ import unittest
 
 sys.path.insert(0, os.path.dirname(__file__))
 from validate_prompt import (
-    detect_language, check_length, check_time_slices,
+    check_length, check_time_slices,
     check_camera_language, check_cgi_words, check_asset_refs,
     check_conflict, validate_prompt
 )
 
 
-class TestDetectLanguage(unittest.TestCase):
-    """语言自动检测"""
-
-    def test_chinese_text(self):
-        self.assertEqual(detect_language("一个穿红色衣服的女子在雨中奔跑"), "cn")
-
-    def test_english_text(self):
-        self.assertEqual(detect_language("A woman in red runs through the rain"), "en")
-
-    def test_mixed_mostly_chinese(self):
-        self.assertEqual(detect_language("Epic航拍Dolly In，城市夜景霓虹灯漫射"), "cn")
-
-    def test_empty_text(self):
-        self.assertEqual(detect_language(""), "cn")
-
-
 class TestCheckLength(unittest.TestCase):
-    """字数/词数限制校验"""
+    """字数限制校验"""
 
     def test_cn_within_limit(self):
         text = "赛博朋克城市夜景" * 10  # 80字符
-        results = check_length(text, "cn")
+        results = check_length(text)
         self.assertEqual(results[0]["level"], "pass")
 
     def test_cn_exceed_limit(self):
         text = "赛" * 501
-        results = check_length(text, "cn")
+        results = check_length(text)
         self.assertEqual(results[0]["level"], "error")
         self.assertEqual(results[0]["code"], "LENGTH_EXCEEDED")
 
     def test_cn_near_limit(self):
         text = "赛" * 430  # 86%
-        results = check_length(text, "cn")
+        results = check_length(text)
         self.assertEqual(results[0]["level"], "warning")
         self.assertEqual(results[0]["code"], "LENGTH_NEAR_LIMIT")
 
-    def test_en_within_limit(self):
-        text = " ".join(["word"] * 500)
-        results = check_length(text, "en")
-        self.assertEqual(results[0]["level"], "pass")
-
-    def test_en_exceed_limit(self):
-        text = " ".join(["word"] * 1001)
-        results = check_length(text, "en")
-        self.assertEqual(results[0]["level"], "error")
 
 
 class TestCheckTimeSlices(unittest.TestCase):
@@ -189,35 +164,23 @@ class TestValidatePromptEndToEnd(unittest.TestCase):
             "8-11秒：微距特写面部雨水滚落，Handheld抖动；"
             "12-15秒：Slow Crane Up仰拍。"
         )
-        result = validate_prompt(prompt, "cn")
+        result = validate_prompt(prompt)
         self.assertTrue(result["passed"])
         self.assertEqual(result["summary"]["errors"], 0)
 
     def test_bad_prompt_fails(self):
         prompt = "赛" * 501  # 超长 + 无运镜
-        result = validate_prompt(prompt, "cn")
+        result = validate_prompt(prompt)
         self.assertFalse(result["passed"])
         self.assertGreater(result["summary"]["errors"], 0)
 
     def test_minimal_prompt_warnings(self):
         prompt = "一个女人走在路上"
-        result = validate_prompt(prompt, "cn")
+        result = validate_prompt(prompt)
         # 会通过（无error），但有warning
         self.assertFalse(result["passed"])  # 缺少运镜会报error
 
 
-class TestAutoLangDetection(unittest.TestCase):
-    """自动语言检测集成测试"""
-
-    def test_auto_cn(self):
-        result = validate_prompt("航拍城市夜景，Dolly In推进", lang="auto")
-        self.assertEqual(result["language"], "cn")
-
-    def test_auto_en(self):
-        result = validate_prompt(
-            "Aerial city night view, Dolly In push forward", lang="auto"
-        )
-        self.assertEqual(result["language"], "en")
 
 
 if __name__ == "__main__":
