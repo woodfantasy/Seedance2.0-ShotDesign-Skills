@@ -1,4 +1,4 @@
-# 🎬 Seedance Shot Design — 专业分镜提示词工程师
+# 🎬 Seedance2.0 Shot Design — 专业分镜提示词工程师
 
 [![版本](https://img.shields.io/badge/version-1.1.0-blue.svg)]()
 [![协议](https://img.shields.io/badge/license-MIT--0-green.svg)](LICENSE)
