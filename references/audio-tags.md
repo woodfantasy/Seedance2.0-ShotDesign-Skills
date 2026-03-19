@@ -48,6 +48,33 @@
 | 实验室 | 仪器蜂鸣+液体冒泡+通风管低频 |
 | 图书馆 | 极致安静+偶尔翻页+远处咳嗽 |
 
+### 空间声学修饰词 (Spatial Acoustics)
+
+> 为音效描述加上“空间定语”，告别单薄平面的声音。可与上方环境音自由组合使用。
+
+| 空间定语 | 英文 | 声学效果 | 适用场景 |
+|----------|------|----------|----------|
+| 水下沉闷 | Muffled underwater | 低频轰鸣，高频被吸收 | 水下/淹没/深海 |
+| 教堂回响 | Echoing in cavernous cathedral | 巨大空旷混响，声音反复反射 | 寺庙/山洞/废弃工厂 |
+| 金属管道共振 | Resonating through metal duct | 冷硬工业共振，带金属混音 | 飞船内部/工厂/通风管道 |
+| 远距闷响 | Distant muffled | 空间纵深感，声音多次衰减 | 远处爆炸/战争/雷雨 |
+| 密闭压迫 | Claustrophobic confined space | 窒息压抑，声音反射急促 | 电梯/密室/棺材内 |
+| 空旷荒野 | Vast open-air with no reflections | 声音迅速衰减，无回音 | 沙漠/草原/天台山顶 |
+| 雨中浸泡 | Rain-drenched with white noise bed | 白噪音底床包裹一切 | 暴风雨/雨夜街头 |
+
+**组合使用范例：**
+
+```
+# 水下场景
+音效：Muffled underwater low-frequency rumble + 远处鲸鱼低鸣 + 气泡上升的咕噜声
+
+# 废弃教堂
+音效：Echoing in cavernous cathedral, 脚步声反复回荡 + 远处滴水 + 风穿过破窗的噜噜声
+
+# 密闭空间
+音效：Claustrophobic confined space, 急促的呼吸声回弹 + 指甲刮墙壁 + 心跳般的低频震动
+```
+
 ## 四、动作音效分类词库
 
 | 动作类型 | 音效描述 |
@@ -60,6 +87,27 @@
 | 风 | 呼啸穿过峡谷 / 微风拂过耳边 / 风暴级狂风呼号 |
 | 金属 | 铁链拖拽+齿轮咬合+金属碰撞铿锵 |
 | 魔法/科幻 | 能量充能嗡鸣 / 传送门嘶嘶声 / 光剑振动低频 |
+
+### 材质拟声精细化 (Material Foley)
+
+> “走路声”太笼统！精细化为“材质 + 力度 + 表面”三维描述，音效质感提升10倍。
+
+| ✗ 笼统写法 | ✓ 精细化写法 | 英文提示词 |
+|------------|------------|------------|
+| 走路声 | 重靴踩在干雪上的嘎吷声 | `Crunching heavy boots on dry compacted snow` |
+| 走路声 | 高跟鞋踩在湿滑大理石上的清脆哒哒 | `Sharp heels clicking on wet marble floor` |
+| 走路声 | 赤脚踩在浅水洼中的啦啪飞溅 | `Bare feet splashing through shallow puddle` |
+| 撞击声 | 次声波级的沉重撞击，伴碎片飞清 | `Heavy sub-bass impact with debris scatter and rattle` |
+| 门声 | 锈铁门磨混凝土地面的刺耳刮擦 | `Rusty metal door grinding on concrete floor` |
+| 衣物声 | 厉风中皮革风衣猜猜拍打 | `Leather coat flapping violently in gale-force wind` |
+| 液体声 | 浓稠血液滴落在金属地板上的沉闷啪嗒 | `Viscous liquid dripping onto metal surface, thick splat` |
+
+**组合使用范例：**
+
+```
+# 雨夜追逐场景音效
+音效：Crunching gravel underfoot shifting to splashing through rain puddles, leather jacket flapping in wind, heavy breathing echoing in narrow alley, distant police siren Doppler-shifting
+```
 
 ## 五、人声/台词描述
 

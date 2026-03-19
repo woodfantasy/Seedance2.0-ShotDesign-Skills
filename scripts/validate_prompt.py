@@ -53,8 +53,21 @@ def check_length(text):
     return results
 
 
+def _detect_declared_duration(text):
+    """从提示词中提取声明的时长（秒）"""
+    patterns = [
+        r'(\d+)\s*秒',
+        r'(\d+)\s*[sS](?:ec|econds?)?(?:\s|，|,|$)',
+    ]
+    durations = []
+    for pat in patterns:
+        for m in re.finditer(pat, text[:60]):  # 时长声明通常在开头
+            durations.append(int(m.group(1)))
+    return max(durations) if durations else 0
+
+
 def check_time_slices(text):
-    """检查时序切片逻辑"""
+    """检查时序切片逻辑（时长感知版）"""
     results = []
     # 匹配多种时间戳格式: [0-3s], [0-3秒], 0-3s：, 0-3秒：
     patterns = [
@@ -75,14 +88,25 @@ def check_time_slices(text):
 
     # 去重
     all_slices = sorted(set(all_slices))
+    declared_duration = _detect_declared_duration(text)
 
     if not all_slices:
-        results.append({
-            "level": "warning",
-            "code": "NO_TIME_SLICES",
-            "message": "未检测到时序切片（如 [0-3s] 或 0-3秒：）。"
-                       "若生成长视频(>5s)，画面动作极易粘连崩坏。"
-        })
+        # 时长感知：>5s 无时间切片为 error，≤5s 为 warning
+        if declared_duration > 5:
+            results.append({
+                "level": "error",
+                "code": "LONG_VIDEO_NO_SLICES",
+                "message": f"声明时长 {declared_duration}秒 但未使用时间切片！"
+                           f"超过5秒的视频必须使用时序切片（如 0-3秒：...；4-7秒：...），"
+                           f"否则画面动作会揉作一团。"
+            })
+        else:
+            results.append({
+                "level": "warning",
+                "code": "NO_TIME_SLICES",
+                "message": "未检测到时序切片（如 [0-3s] 或 0-3秒：）。"
+                           "若生成长视频(>5s)，画面动作极易粘连崩坏。"
+            })
     else:
         # 检查时间段是否有重叠
         for i in range(len(all_slices) - 1):
@@ -101,6 +125,17 @@ def check_time_slices(text):
                 "code": "TIME_NOT_FROM_ZERO",
                 "message": f"时间戳未从0开始，首段为 [{all_slices[0][0]}-{all_slices[0][1]}s]。"
             })
+
+        # 检查声明时长与切片末端是否匹配
+        if declared_duration > 0:
+            last_end = all_slices[-1][1]
+            if abs(last_end - declared_duration) > 2:
+                results.append({
+                    "level": "warning",
+                    "code": "DURATION_MISMATCH",
+                    "message": f"声明时长 {declared_duration}秒，但时间切片结束于 {last_end}秒，"
+                               f"差距 {abs(last_end - declared_duration)}秒。请检查是否遗漏时间段。"
+                })
 
         if not results:
             results.append({
@@ -152,21 +187,24 @@ def check_camera_language(text):
 
 
 def check_cgi_words(text):
-    """检查是否包含易产生 AI 塑料感的废话"""
+    """检查是否包含易产生 AI 塑料感的废话（硬阻断）"""
     results = []
-    cgi_words = {
-        "cn": ["超清晰", "杰作", "高画质", "超高画质", "超精细"],
+    # 硬黑名单：直接阻断（error），这些词无任何合理使用场景
+    banned_hard = {
+        "cn": ["超清晰", "杰作", "高画质", "超高画质", "超精细",
+               "极致画质", "完美画质"],
         "en": ["masterpiece", "ultra-sharp", "best quality",
-               "extremely detailed", "hyper-realistic"]
+               "extremely detailed", "hyper-realistic",
+               "ultra hd", "super resolution"]
     }
-    # 注意：4k/8k 在品质锚定语境下可能有意义，仅作警告
+    # 软警告：4k/8k 在品质锚定语境下可能有意义，仅作警告
     soft_warn = ["4k", "8k", "4K", "8K"]
 
     found_hard = []
     found_soft = []
     text_lower = text.lower()
 
-    for word_list in cgi_words.values():
+    for word_list in banned_hard.values():
         for w in word_list:
             if w.lower() in text_lower:
                 found_hard.append(w)
@@ -177,14 +215,14 @@ def check_cgi_words(text):
 
     if found_hard:
         results.append({
-            "level": "warning",
-            "code": "CGI_WORDS_DETECTED",
-            "message": f"检测到易产生'AI塑料感'的废话词汇：{', '.join(found_hard)}。"
-                       f"建议替换为物理材质词（如：35mm胶片颗粒、自然皮肤纹理微瑕）。"
+            "level": "error",
+            "code": "BANNED_WORDS_DETECTED",
+            "message": f"❌ 检测到廉价 AI 塑料感词汇：{', '.join(found_hard)}。"
+                       f"请立即使用 quality-anchors.md 中的胶片型号/材质质感/有机瑕疵进行替换！"
         })
     if found_soft:
         results.append({
-            "level": "info",
+            "level": "warning",
             "code": "RESOLUTION_WORDS",
             "message": f"检测到分辨率词汇：{', '.join(found_soft)}。"
                        f"若用于品质锚定（如配合渲染引擎声明）可保留，否则建议移除。"
@@ -257,36 +295,83 @@ def check_asset_refs(text):
 
 
 def check_conflict(text):
-    """检查是否存在逻辑冲突"""
+    """检查运动冲突 + 光学物理冲突 + 风格冲突"""
     results = []
-    conflict_pairs = [
-        (["快速", "高速", "急速", "fast", "rapid"], ["慢动作", "slow motion", "慢镜头", "缓慢"]),
-        (["推进", "push in", "dolly in", "zoom in"], ["拉远", "pull out", "dolly out", "zoom out"]),
+
+    # === 运动逻辑冲突（按时间段分割检查） ===
+    motion_conflicts = [
+        (["快速", "高速", "急速", "fast", "rapid"],
+         ["慢动作", "slow motion", "慢镜头", "缓慢"],
+         "速度冲突：快速与慢动作同段出现"),
+        (["推进", "push in", "dolly in", "zoom in"],
+         ["拉远", "pull out", "dolly out", "zoom out"],
+         "运动冲突：推进与拉远同段出现"),
     ]
 
-    text_lower = text.lower()
-    # 按时间段分割检查
     segments = re.split(r'\d+-\d+[s秒][：:；;]?', text)
-
     for seg in segments:
         seg_lower = seg.lower()
-        for fast_words, slow_words in conflict_pairs:
-            has_fast = any(w in seg_lower for w in fast_words)
-            has_slow = any(w in seg_lower for w in slow_words)
-            if has_fast and has_slow:
+        for group_a, group_b, desc in motion_conflicts:
+            has_a = any(w in seg_lower for w in group_a)
+            has_b = any(w in seg_lower for w in group_b)
+            if has_a and has_b:
                 results.append({
                     "level": "warning",
                     "code": "MOTION_CONFLICT",
-                    "message": f"同一段内可能存在运动冲突（快/慢或推/拉同时出现）。"
+                    "message": f"同一段内{desc}。"
                                f"模型接收矛盾信号会导致画面撕裂或果冻效应。"
                 })
                 break
+
+    # === 光学物理冲突（全文检查） ===
+    optical_conflicts = [
+        (["14mm", "ultra-wide", "超广角", "ultra wide"],
+         ["bokeh", "浅景深", "虚化", "奶油般", "creamy bokeh", "shallow depth"],
+         "光学冲突！超广角(14mm)物理上无法产生强烈背景虚化，会造成 AI 渲染崩溃。请修改焦段或景深描述"),
+        (["手持", "handheld", "手持晃动", "手持微晃"],
+         ["绝对对称", "perfectly symmetrical", "完美对称", "严格对称"],
+         "构图冲突！手持晃动不可能保持绝对对称构图，请选择三脚架/云台或放弃对称"),
+    ]
+
+    text_lower = text.lower()
+    for group_a, group_b, desc in optical_conflicts:
+        has_a = any(w in text_lower for w in group_a)
+        has_b = any(w in text_lower for w in group_b)
+        if has_a and has_b:
+            results.append({
+                "level": "error",
+                "code": "OPTICAL_CONFLICT",
+                "message": f"❌ {desc}。"
+            })
+
+    # === 风格冲突矩阵（全文检查） ===
+    style_conflicts = [
+        (["imax", "65mm清晰", "65mm", "imax清晰"],
+         ["vhs", "录像带", "scan lines", "扫描线", "低分辨率"],
+         "品质冲突！IMAX极致清晰与VHS模拟降解不可混用，请二选一"),
+        (["胶片颗粒", "film grain", "有机噪点", "胶片质感"],
+         ["锐利数码", "sharp digital", "电商质感", "锐利电商"],
+         "品质冲突！胶片有机颗粒与锐利数码质感互斥——电商禁胶片，影片禁数码锐"),
+        (["水墨", "ink wash", "宣纸", "写意", "水墨画"],
+         ["ue5", "unreal engine", "光追", "ray tracing", "写实渲染"],
+         "风格冲突！水墨写意与UE5写实光追互斥，若要融合请用'3D渲染水墨质感'"),
+    ]
+
+    for group_a, group_b, desc in style_conflicts:
+        has_a = any(w in text_lower for w in group_a)
+        has_b = any(w in text_lower for w in group_b)
+        if has_a and has_b:
+            results.append({
+                "level": "error",
+                "code": "STYLE_CONFLICT",
+                "message": f"❌ {desc}。"
+            })
 
     if not results:
         results.append({
             "level": "pass",
             "code": "NO_CONFLICT",
-            "message": "未检测到逻辑冲突。"
+            "message": "未检测到逻辑/光学/风格冲突。"
         })
     return results
 

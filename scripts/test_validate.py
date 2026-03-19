@@ -12,7 +12,7 @@ sys.path.insert(0, os.path.dirname(__file__))
 from validate_prompt import (
     check_length, check_time_slices,
     check_camera_language, check_cgi_words, check_asset_refs,
-    check_conflict, validate_prompt
+    check_conflict, validate_prompt, _detect_declared_duration
 )
 
 
@@ -97,7 +97,8 @@ class TestCheckCgiWords(unittest.TestCase):
     def test_has_cgi_words(self):
         text = "杰作级画质，超清晰，masterpiece"
         results = check_cgi_words(text)
-        self.assertTrue(any(r["code"] == "CGI_WORDS_DETECTED" for r in results))
+        self.assertTrue(any(r["code"] == "BANNED_WORDS_DETECTED" for r in results))
+        self.assertTrue(any(r["level"] == "error" for r in results))
 
     def test_soft_resolution(self):
         text = "8K超高清画面，配合UnrealEngine5渲染"
@@ -152,6 +153,42 @@ class TestCheckConflict(unittest.TestCase):
         results = check_conflict(text)
         self.assertTrue(any(r["code"] == "MOTION_CONFLICT" for r in results))
 
+    def test_optical_conflict_wide_bokeh(self):
+        """14mm超广角 + 浅景深虚化 = 光学冲突"""
+        text = "14mm ultra-wide拍摄，背景浅景深虚化散景"
+        results = check_conflict(text)
+        self.assertTrue(any(r["code"] == "OPTICAL_CONFLICT" for r in results))
+
+    def test_optical_conflict_handheld_symmetry(self):
+        """手持晃动 + 绝对对称 = 构图冲突"""
+        text = "手持微晃拍摄，绝对对称构图"
+        results = check_conflict(text)
+        self.assertTrue(any(r["code"] == "OPTICAL_CONFLICT" for r in results))
+
+    def test_style_conflict_imax_vhs(self):
+        """IMAX清晰 + VHS降解 = 品质冲突"""
+        text = "IMAX 65mm清晰画质，VHS录像带质感"
+        results = check_conflict(text)
+        self.assertTrue(any(r["code"] == "STYLE_CONFLICT" for r in results))
+
+    def test_style_conflict_film_digital(self):
+        """胶片颗粒 + 锐利数码 = 品质冲突"""
+        text = "35mm胶片颗粒质感，锐利数码电商质感"
+        results = check_conflict(text)
+        self.assertTrue(any(r["code"] == "STYLE_CONFLICT" for r in results))
+
+    def test_style_conflict_ink_ue5(self):
+        """水墨 + UE5光追 = 风格冲突"""
+        text = "水墨宣纸笔触，unreal engine光追渲染"
+        results = check_conflict(text)
+        self.assertTrue(any(r["code"] == "STYLE_CONFLICT" for r in results))
+
+    def test_no_style_conflict(self):
+        """正常提示词无冲突"""
+        text = "35mm胶片颗粒，自然光，手持微晃"
+        results = check_conflict(text)
+        self.assertTrue(any(r["code"] == "NO_CONFLICT" for r in results))
+
 
 class TestValidatePromptEndToEnd(unittest.TestCase):
     """端到端校验"""
@@ -179,6 +216,35 @@ class TestValidatePromptEndToEnd(unittest.TestCase):
         result = validate_prompt(prompt)
         # 会通过（无error），但有warning
         self.assertFalse(result["passed"])  # 缺少运镜会报error
+
+
+class TestDurationAwareSlices(unittest.TestCase):
+    """时长感知的时间切片检测"""
+
+    def test_long_video_no_slices_is_error(self):
+        """10秒视频无时间切片 = error"""
+        text = "10秒赛博朋克夜景，主角在雨中奔跑"
+        results = check_time_slices(text)
+        self.assertTrue(any(r["code"] == "LONG_VIDEO_NO_SLICES" for r in results))
+        self.assertTrue(any(r["level"] == "error" for r in results))
+
+    def test_short_video_no_slices_is_warning(self):
+        """5秒视频无时间切片 = warning"""
+        text = "5秒微距拍摄，水滴碰撞"
+        results = check_time_slices(text)
+        self.assertTrue(any(r["code"] == "NO_TIME_SLICES" for r in results))
+        self.assertTrue(any(r["level"] == "warning" for r in results))
+
+    def test_duration_mismatch(self):
+        """声明15秒但切片只到10秒"""
+        text = "15秒赛博朋克夜景，0-3秒：画面A；4-7秒：画面B；8-10秒：画面C"
+        results = check_time_slices(text)
+        self.assertTrue(any(r["code"] == "DURATION_MISMATCH" for r in results))
+
+    def test_detect_declared_duration(self):
+        self.assertEqual(_detect_declared_duration("10秒赛博朋克"), 10)
+        self.assertEqual(_detect_declared_duration("15秒大片"), 15)
+        self.assertEqual(_detect_declared_duration("一只猫在睡觉"), 0)
 
 
 

@@ -8,7 +8,7 @@ description: >
   包含专业运镜词典、导演风格库、品质锚定体系与 Python 自动校验。
 metadata:
   author: woodfantasy
-  version: "1.0.0"
+  version: "1.1.0"
 ---
 
 # Seedance 2.0 Shot Design
@@ -82,7 +82,7 @@ metadata:
 python scripts/validate_prompt.py --text "你拟定的提示词草案"
 ```
 
-- 如果报错（字数超标、缺少运镜、存在逻辑冲突），**自我反思**并重写
+- 如果报错（字数超标、缺少运镜、废话词阻断、光学物理冲突、风格冲突矩阵），**自我反思**并重写
 - **必须再次运行校验**，直到脚本返回通过
 - 同时执行版权安全检查（见下方版权避障策略）
 

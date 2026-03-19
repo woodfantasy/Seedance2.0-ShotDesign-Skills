@@ -3,6 +3,21 @@
 > 将导演的视觉语言拆解为 AI 可计算的参数——构图、光影、色调、运镜、材质。
 > 不仅涵盖国际电影大师，还包括中国影视、短剧、AI漫剧、社交媒体等多元风格。
 
+### 🚨 去名化使用规范（强制）
+
+> **最终提示词中严禁出现任何导演名、工作室名或 IP 名。** 标题中的导演名仅供 Claude 内部索引匹配用户意图，不可泄漏到输出中。
+
+**四大物理轴降解框架：** 当用户提及某导演风格时，必须将其降解为以下四轴的纯物理参数组合：
+
+| 物理轴 | 含义 | 示例 |
+|--------|------|------|
+| 🎨 色彩 (Palette) | 色盘、饱和度、色温 | `Desaturated desert palette` / `Neon teal and orange` |
+| 💡 灯光 (Lighting) | 光源类型、光行为、氛围 | `Heavy atmospheric haze` / `Smoldering neon glow` |
+| 🏛️ 美术 (Art Direction) | 建筑、材质、场景美学 | `Brutalist architecture` / `Pastel dollhouse set` |
+| 📷 机位 (Camera) | 焦段、运镜、稳定方式 | `Glacial push-in` / `Strict symmetrical framing` |
+
+**使用流程：** 用户说"维伦纽瓦风格" → Claude 匹配到本库中维伦纽瓦条目 → 提取 `安全提示词` 行 → 嵌入最终提示词中（**不含任何人名**）。
+
 ---
 
 ## 一、国际电影大师风格
@@ -17,6 +32,8 @@
 | **运镜** | 缓慢推轨、IMAX稳定器、极少手持 |
 | **材质** | 65mm IMAX胶片颗粒、真实物理特效、实景爆破质感 |
 | **提示词模板** | `IMAX 65mm film clarity, fine organic film grain, desaturated cold palette, high-contrast cinematic lighting, practically plausible motion, heavy debris physics` |
+| **安全提示词** | `IMAX 65mm film grain, desaturated steel-blue and charcoal palette, high-contrast natural key lighting, monumental practical-scale architecture, glacial dolly push-in, heavy debris particle physics, zero handheld shake` |
+| **❌ 禁止** | 禁止出现导演名字；避免直接写"时间穿越""旋转走廊"等诺兰标志性情节符号，改用纯物理参数描述 |
 
 ### 丹尼斯·维伦纽瓦 (Denis Villeneuve) — 巨物压迫
 
@@ -28,6 +45,8 @@
 | **运镜** | 极缓推轨、长焦远景、肃穆缓慢 |
 | **材质** | 粗砂岩质感、混凝土表面、大气霾 |
 | **提示词模板** | `Brutalist minimalist architecture, monumental epic scale, diffused ambient lighting, volumetric fog, atmospheric depth, minimalist desaturated color grading with stark contrast` |
+| **安全提示词** | `Brutalist concrete architecture, monolithic scale with tiny human figure for contrast, heavy atmospheric haze with volumetric god rays, desaturated amber-sand palette, glacial push-in on 135mm telephoto, oppressive silence` |
+| **❌ 禁止** | 禁止出现导演名字；避免直接写"沙丘""沙虫"等IP符号，用"巨型生物体穿越沙暴"等纯物理描述替代 |
 
 ### 韦斯·安德森 (Wes Anderson) — 极致对称童话
 
@@ -39,6 +58,8 @@
 | **运镜** | 机械式90度横摇、直线横向推轨、禁用透视变化 |
 | **材质** | 精致布景、微缩模型感、复古纸质质感 |
 | **提示词模板** | `Perfect symmetrical framing, centered composition, flat spatial depth, pastel color palette (mustard yellow and powder pink), meticulous set design, 90-degree whip pan` |
+| **安全提示词** | `Strict symmetrical centered composition, flat theatrical staging with zero depth perspective, pastel macaron palette (mustard yellow, powder pink, mint green), mechanical 90-degree lateral dolly, miniature dollhouse set design, soft even fill lighting with no hard shadows` |
+| **❌ 禁止** | 禁止出现导演名字；绝对禁用手持晃动/Handheld；避免任何透视纵深变化，保持扁平正交构图 |
 
 ### 王家卫 (Wong Kar-wai) — 霓虹迷幻
 
@@ -50,6 +71,8 @@
 | **运镜** | 抽帧拖影、降速快门、手持晃动 |
 | **材质** | 胶片刮痕、残影拖尾、湿润质感 |
 | **提示词模板** | `Neon-lit urban night, highly saturated contrasting colors (deep vivid reds and emerald greens), shallow depth of field, claustrophobic framing, reflections on wet surfaces, slow shutter speed effect, motion blur trails` |
+| **安全提示词** | `Step-printed slow motion with ghosting trails, voyeuristic foreground obstruction (door frames, curtains, glass), neon teal-and-orange split lighting, smoldering atmospheric haze, claustrophobic tight framing, rain-soaked reflective surfaces, slow shutter drag with motion blur` |
+| **❌ 禁止** | 禁止出现导演名字；避免自动生成旗袍/花样年华等刻板符号，聚焦于光影和运镜的物理参数 |
 
 ### 宫崎骏 (Hayao Miyazaki) — 手绘幻想
 
@@ -60,7 +83,61 @@
 | **色调** | 清新自然绿/天空蓝/暖黄 |
 | **运镜** | 缓慢平移、飞行跟拍、俯瞰全景 |
 | **材质** | 手绘水彩质感、柔和线条、自然肌理 |
-| **提示词模板** | `Hand-painted watercolor aesthetic, soft natural lighting, expansive sky composition, gentle breeze animation, lush green natural palette, Studio Ghibli-inspired warm tones` |
+| **提示词模板** | `Hand-painted watercolor aesthetic, soft natural lighting, expansive sky composition, gentle breeze animation, lush green natural palette, warm nostalgic tones` |
+| **安全提示词** | `Hand-painted watercolor cel animation, soft diffused natural sunlight through cumulus clouds, expansive 70% sky composition, lush green-and-sky-blue pastoral palette, gentle breeze rippling grass and hair, slow pan across meadow, warm nostalgic golden-hour tones` |
+| **❌ 禁止** | 禁止出现导演名/工作室名；避免直接引用龙猫/千寻/天空之城等IP形象，用"毛茸茸的巨型森林守护灵"等原创描述替代 |
+
+### 大卫·芬奇 (David Fincher) — 精密惊悚
+
+| 维度 | 参数 |
+|------|------|
+| **构图** | 精确框取、绝对控制感、主体居中偏移制造不安 |
+| **光影** | 低调打光、大面积暗部、单点光源雕刻面部 |
+| **色调** | 去饱和黑绿/铅灰/冷青，极低彩度 |
+| **运镜** | 精密推轨、缓慢平滑的轨道运动、禁用手持晃动 |
+| **材质** | 数码超清斄质感（非ICU粒）、冷硬表面、室内人工光 |
+| **提示词模板** | `Low-key lighting with dominant shadows, desaturated green-grey palette, precise dolly tracking, controlled cold atmosphere, clinical digital clarity` |
+| **安全提示词** | `Low-key single-source lighting carving face from darkness, desaturated sickly green-grey palette, precise mechanical dolly tracking with zero handheld, clinical digital texture, oppressive controlled framing, subject slightly off-center creating unease` |
+| **❌ 禁止** | 禁止出现导演名字；禁用手持晃动；避免"等待室""纸牌屋"等作品符号 |
+
+### 罗杰·迪金斯 (Roger Deakins) — 自然光减法
+
+| 维度 | 参数 |
+|------|------|
+| **构图** | 空间层次感、前中后景分离、画面内自然框取 |
+| **光影** | 极致自然光、窗光/天光为主、最少干预的布光 |
+| **色调** | 自然色温、黄金时刻暖调、低对比柔和 |
+| **运镜** | 极简克制的运镜、缓慢推轨、长镜头凝视 |
+| **材质** | 自然光下的真实肤色、大气透视层次、空气中的微尘 |
+| **提示词模板** | `Natural available light only, golden hour warmth, layered spatial depth with atmospheric perspective, minimal camera movement, restrained understated beauty` |
+| **安全提示词** | `Natural window light as sole source, golden-hour warmth with soft shadow falloff, layered spatial depth using atmospheric haze between planes, slow contemplative dolly, available-light skin tones, floating dust particles catching light, minimal intervention restrained beauty` |
+| **❌ 禁止** | 禁止出现摄影师名字；禁用激烈光效/霓虹/特效灯；避免"银翼杀手""肖申克的救赎"等作品引用 |
+
+### 黑泽明 (Akira Kurosawa) — 天气叙事
+
+| 维度 | 参数 |
+|------|------|
+| **构图** | 群像调度、强方向性运动线、前景遮挡增层次 |
+| **光影** | 天气驱动光线——暴风雨/烈日/大雾本身就是照明 |
+| **色调** | 高对比黑白质感（彩色时为暗沉土色/绿） |
+| **运镜** | 多机位交叉剪辑、群体动作的长焦压缩、慢动作死亡美学 |
+| **材质** | 风雨粒子/泥地飞溅/旗帜狂舞的物理质感 |
+| **提示词模板** | `Weather-driven dramatic lighting, torrential rain as narrative force, ensemble group choreography, strong directional movement, telephoto compression of crowd action, slow-motion death aesthetics` |
+| **安全提示词** | `Torrential rain as dominant lighting source and narrative force, ensemble warriors in directional formation charge, 200mm telephoto compressing depth, mud splashing with each footstep, banners whipping violently in storm wind, slow-motion blade arc with rain droplets frozen mid-air, high-contrast chiaroscuro` |
+| **❌ 禁止** | 禁止出现导演名字；避免"七武士""乱"等作品名；用"古代武士集团"等原创描述 |
+
+### 新海诚 (Makoto Shinkai) — 数码光彩动画
+
+| 维度 | 参数 |
+|------|------|
+| **构图** | 天空占画面 60%+、极致云层光影细节、青春人物剑影 |
+| **光影** | 极致逆光、光线穿透云层的丁达尔效应、黄昏/黄金时刻滥用 |
+| **色调** | 极高彩度的蓝/紫/橙天空、色彩爆炸式渐变 |
+| **运镜** | 细节特写插入（水滴/树叶/手机屏）、缓慢推轨 |
+| **材质** | 数码CG超写实背景 + 简化人物、光斑散景、晶莹的水滴 |
+| **提示词模板** | `Hyper-saturated sky gradient (deep blue to vivid orange), dramatic god rays through towering cumulus clouds, digital anime aesthetic with photorealistic backgrounds, youth silhouette against golden-hour sky, crystalline light particles` |
+| **安全提示词** | `Digital anime aesthetic, hyper-detailed photorealistic sky with towering cumulus clouds and vivid blue-to-orange gradient, dramatic god rays piercing cloud layers, youth figure silhouette against golden-hour backlight, crystalline rain droplets catching prismatic light, extreme color saturation, detail insert cuts of water droplets on glass` |
+| **❌ 禁止** | 禁止出现导演名字；避免"你的名字""天气之子""铃芽之旅"等IP引用；与宫崎骏的区分：宫崎骏=手绘田园暖色，新海诚=数码超写实+天空爆炸色彩 |
 
 ---
 
@@ -153,6 +230,26 @@
 | **运镜** | 开场Zoom In冲击、Speed Ramp慢转快 |
 | **材质** | 锐利数码、HDR效果 |
 | **提示词模板** | `社交媒体竖屏，前3秒极致视觉冲击，Speed Ramp从慢动作突变快进，超饱和鲜艳色彩，高对比HDR效果，主体占画面80%以上，强节奏感配乐卡点` |
+
+### 二次元变身 / 热血战斗 — 动漫爆燃
+
+| 维度 | 参数 |
+|------|------|
+| **构图** | 冲击帧居中放大、速度线汇聚、气场爆发放射状构图 |
+| **色调** | 极高饱和 + 技能色光（火红/电蓝/金黄） |
+| **运镜** | Speed Ramp变速 + 定格冲击帧 + 360°环绕 + 急推特写 |
+| **材质** | 赛璐璐上色/3D卡通渲染、粒子爆散特效、能量拖尾 |
+| **提示词模板** | `二次元动漫爆燃风格，变身光效爆发，速度线汇聚，冲击帧定格放大，极高饱和色彩，能量粒子拖尾，Speed Ramp从慢动作突然加速，气场冲击波扩散` |
+
+### 小红书种草 — 精致生活感
+
+| 维度 | 参数 |
+|------|------|
+| **构图** | 干净白色/奶油色背景、产品平铺构图、留白充足 |
+| **色调** | 马卡龙淡彩 + 微暖偏移、柔和不刺眼 |
+| **运镜** | Static固定 / Subtle Dolly微推 / Overhead俯拍平铺 |
+| **材质** | 数码清晰但不锐利、柔光无硬影、产品质感突出 |
+| **提示词模板** | `小红书种草风格，干净奶油色背景，产品平铺居中，柔和自然光，马卡龙淡彩色调，大面积留白，Overhead俯拍，精致生活感` |
 
 ---
 
