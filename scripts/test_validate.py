@@ -214,6 +214,12 @@ class TestCheckConflict(unittest.TestCase):
         results = check_conflict(text)
         self.assertTrue(any(r["code"] == "NO_CONFLICT" for r in results))
 
+    def test_style_conflict_slowmo_speedramp(self):
+        """Slow Motion + Speed Ramp = 速度冲突"""
+        text = "慢镜头特写，Speed Ramp变速加速"
+        results = check_conflict(text)
+        self.assertTrue(any(r["code"] == "STYLE_CONFLICT" for r in results))
+
 
 class TestValidatePromptEndToEnd(unittest.TestCase):
     """端到端校验"""

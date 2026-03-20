@@ -247,7 +247,7 @@
 
 > **定位：** 用于游戏剧情CG、PV预告、角色传记、过场动画等沉稳叙事场景。与上方「二次元爆燃」的核心区别：这里追求的是「电影级叙事 + 动画化渲染」，而非「节奏爆炸 + 特效堆叠」。
 >
-> **代表作参考风格：** 《原神》《崩坏：星穹铁道》《鬼灭之刃》ifotable级）《蓝色禁区》—— 3D建模 + 卡通渲染管线，保留二维动画的手绘美感。
+> **代表作参考风格：** 《原神》《崩坏：星穹铁道》《鬼灭之刃》（ufotable级）《蓝色禁区》—— 3D建模 + 卡通渲染管线，保留二维动画的手绘美感。
 
 | 维度 | 参数 |
 |------|------|
@@ -255,7 +255,7 @@
 | **光影** | 简化光源、Anime式硬边阴影二值化（sharp shadow cutoff）、强轮廓 Rim Light 分离角色与背景、减少光影渐变层次 |
 | **色调** | 高饱和 Anime 色盘（HSL 精调）、明暗硬边分割、根据角色属性选主色调（火红/冰蓝/暗紫/金色） |
 | **运镜** | 电影级运镜（复用现有运镜体系）、长焦浅景深特写 + 史诗航拍、Orbit环绕角色展示 |
-| **材质** | **动画化材质（核心区别点）：** Cel-shaded flat shading + 描边轮廓线（bold ink outlines）+ Anime头发高光带 + 简化折皱色块填充、**禁用写实 PBR 材质词（毛孔/SSS/微瑕疑）** |
+| **材质** | **动画化材质（核心区别点）：** Cel-shaded flat shading + 描边轮廓线（bold ink outlines）+ Anime头发高光带 + 简化折皱色块填充、**禁用写实 PBR 材质词（毛孔/SSS/微瑕疵）** |
 | **提示词模板** | `3D cel-shaded toon rendering with bold ink outlines, anime-style sharp shadow cutoff, high-saturation character color palette, simplified flat material shading, strong rim light separating character from background, cinematic depth of field with anime bokeh` |
 | **安全提示词** | `3D Cel-Shaded Toon渲染，Anime风格硬边阴影二值化，粗描边轮廓线，高饱和角色色盘，简化平涂材质，强Rim Light分离角色与背景，电影级景深与Anime散景` |
 | **❤️ 与「二次元爆燃」的配合** | 同一角色的叙事性CG用本条目，战斗片段用上方「二次元爆燃」，两者可在同一PV内分段切换 |

@@ -18,8 +18,19 @@ import json
 
 
 def detect_language(text):
-    """检测提示词语言：中文字符占比超30%则为中文，否则为英文"""
-    chinese_chars = sum(1 for c in text if '\u4e00' <= c <= '\u9fff')
+    """检测提示词语言：中文字符占比超30%则为中文，否则为英文。
+    覆盖 CJK Unified (U+4E00–U+9FFF)、CJK Extension A (U+3400–U+4DBF)、
+    CJK 符号与标点 (U+3000–U+303F)、全角标点 (U+FF00–U+FFEF)。
+    """
+    def is_cjk(c):
+        cp = ord(c)
+        return (
+            0x4E00 <= cp <= 0x9FFF or    # CJK Unified Ideographs
+            0x3400 <= cp <= 0x4DBF or    # CJK Extension A
+            0x3000 <= cp <= 0x303F or    # CJK Symbols and Punctuation
+            0xFF00 <= cp <= 0xFFEF       # Fullwidth Forms
+        )
+    chinese_chars = sum(1 for c in text if is_cjk(c))
     total_chars = max(len(text.strip()), 1)
     return "cn" if chinese_chars / total_chars > 0.3 else "en"
 
@@ -260,6 +271,7 @@ def check_asset_refs(text):
     aud_refs_cn = re.findall(r'@音频(\d+)', text)
     aud_refs_en = re.findall(r'@audio(\d+)', text, re.IGNORECASE)
 
+    # 中英文引用分别匹配，用 set() 按数字去重（如 @Image1 和 @image1 只计一次）
     img_count = len(set(img_refs_cn + img_refs_en))
     vid_count = len(set(vid_refs_cn + vid_refs_en))
     aud_count = len(set(aud_refs_cn + aud_refs_en))
@@ -374,6 +386,10 @@ def check_conflict(text):
           "micro-imperfections", "微瑕疵", "写实皮肤", "realistic skin"],
          "风格冲突！三渲二/Cel-Shade卡通渲染与写实PBR材质(SSS/毛孔/微瑕疵)互斥——"
          "三渲二应使用动画化材质（硬边阴影+色块填充），不要叠加写实材质词"),
+        (["slow motion", "慢镜头", "慢动作"],
+         ["speed ramp", "变速"],
+         "速度冲突！Slow Motion 慢镜头与 Speed Ramp 变速不可在同一时间切片内同时使用——"
+         "请分时间切片使用，慢镜和变速不在同段重叠"),
     ]
 
     for group_a, group_b, desc in style_conflicts:
