@@ -1,6 +1,8 @@
 # 垂直场景提示词模板库
 
 > 针对高频使用场景提供开箱即用的提示词架构参考。每个模板包含核心参数和示例。
+>
+> **双语规则：** 模板以中文编写。英文输出时，Agent 应按模板结构自行生成英文版——使用英文时间戳（`0-3s:`）、英文标签（`Lighting:` / `SFX:` / `Negative:`）、从 `director-styles.md` 和 `quality-anchors.md` 选用英文提示词列。部分高频场景提供英文示例作为锚点参考。
 
 ---
 
@@ -292,6 +294,55 @@ Orbit 180°逆时针环绕，暗紫色能量沿刀锋轨迹拖尾；
 11-12秒：Pull Out定格全身Pose，镰刀杵地，暗雾收束，渐入黑屏。
 光影：暗紫色技能光+冷白rim light+浓重体积雾。
 音效：低频充能嗡鸣→金属利刃破空→次声波冲击→寂静。
+禁止：任何文字、字幕、LOGO或水印
+```
+
+**Example — Fire Mage Reveal (English anchor):**
+```
+12s game character reveal, UnrealEngine5 rendering, ILM-grade VFX, dark fantasy style,
+0-3s: Black screen, deep heartbeat-like drums, crimson fire particles converging from edges to center;
+4-7s: Speed Ramp burst, character swings flaming greatsword in wide arc,
+Orbit 180° clockwise, fire trail following blade trajectory;
+8-10s: Push In to face ECU, flame runes spiraling in pupils,
+fire shockwave expanding outward behind;
+11-12s: Pull Out freeze full-body pose, sword planted in ground, embers settling, fade to black.
+Lighting: crimson skill light + cold white rim light + heavy volumetric fog.
+SFX: low-frequency charge hum → metal blade whoosh → sub-bass impact → silence.
+Negative: any text, subtitles, logos or watermarks
+```
+
+### 二次元 / Cel-Shaded 变体
+
+> 当用户需要的是《原神》《崩铁》风格的 **动画化游戏PV** 而非写实CG时，使用此变体。
+> 核心区别：渲染引擎从 `UnrealEngine5渲染` 切换为 `3D Cel-Shaded Toon渲染`，材质从写实PBR切换为动画化材质。
+
+**变体模板：**
+```
+[时长]二次元游戏角色PV，3D Cel-Shaded Toon渲染，
+Anime风格硬边阴影二值化，粗描边轮廓线，[色调总纲]，
+
+0-Xs：黑屏+[角色标志性音效]，Anime风格粒子汇聚；
+X-Xs：[角色动作/武器展示]，Orbit环绕，
+Anime头发高光带+简化平涂材质+强Rim Light；
+X-Xs：Push In面部特写，[眼部特效]，
+高饱和角色色盘，Anime散景；
+X-Xs：[定格Pose]，全身居中，渐入黑屏。
+光影：Anime式Rim Light + 技能色光 + 简化阴影。
+音效：[充能→爆发→收束]。
+```
+
+**示例 — 二次元冰属性角色PV：**
+```
+12秒二次元游戏角色PV，3D Cel-Shaded Toon渲染，
+Anime风格硬边阴影二值化，粗描边轮廓线，冰蓝主色调，
+0-3秒：纯黑画面，冰晶粒子从四周向中心缓慢汇聚，高频冰裂音效；
+4-7秒：角色持长枪旋转横扫，Orbit 180°环绕，
+冰霜沿枪尖轨迹扩散，Anime头发高光带随动作流转，简化平涂材质；
+8-10秒：Push In面部特写，冰蓝色瞳孔中雪花结晶旋转，
+强Rim Light勾勒面部轮廓，高饱和冰蓝色盘，Anime散景；
+11-12秒：Pull Out定格全身Pose，长枪斜指天空，冰雾收束，渐入黑屏。
+光影：Anime式冰蓝Rim Light + 冷白技能光 + 简化硬边阴影。
+音效：冰裂碎响→寒风呼啸→冰晶凝固的清脆一击→寂静。
 禁止：任何文字、字幕、LOGO或水印
 ```
 

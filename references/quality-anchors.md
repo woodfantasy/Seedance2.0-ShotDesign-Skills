@@ -21,6 +21,7 @@
 | Blender Cycles渲染 | 独立制作、艺术化 |
 | V-Ray光追渲染 | 建筑可视化、精确光影 |
 | Houdini粒子特效引擎 | 流体/爆炸/粒子 |
+| Cel-Shaded Toon渲染 | 三渲二/动画化CG，简化光影+描边 |
 
 ### 画质规格
 
@@ -94,6 +95,17 @@ Shot on Cinestill 800T, red halation bleeding around neon highlights, warm tungs
 | 食物 | `Glistening food surface with oil sheen, steam wisps rising, juice droplets beading` | 油光/蒸气缚绕/汁液珠化，美食号必备 |
 | 玉石 | `Jade with deep subsurface scattering, waxy luster, translucent green-white gradation` | SSS深层透光+蜡质光泽+渐变透亮 |
 | 石材 | `Rough-hewn stone with granular surface, moss in crevices, weathered patina` | 粗糥颗粒+苔藓嵌缝+风化层 |
+
+### 动画化 / NPR 材质速查 (Anime / Non-Photorealistic Materials)
+
+> 三渲二 / Cel-Shaded 风格的核心区别在于材质——刷意简化光影和细节，打造「3D 建模 + 手绘效果」。**禁止与上方写实材质混用。**
+
+| 材质 | 英文提示词 | 视觉特征 |
+|------|------------|----------|
+| Anime 皮肤 | `Anime cel-shaded skin with sharp shadow boundary, no subsurface scattering, clean color blocks` | 硬边阴影分割，无SSS透光，色块清晰，反写实毛孔 |
+| Anime 头发 | `Anime hair with stylized highlight band, bold color blocks, flyaway strands at edges` | 高光带（非写实散射），色块分明，边缘飞散发丝 |
+| 卡通金属 | `Toon-shaded metal with simplified specular, bold geometric reflection shapes` | 简化高光形状，几何化反射，非物理精确 |
+| 卡通织物 | `Flat-shaded fabric with minimal wrinkle detail, bold color fill, anime-style fold lines` | 极简褶纹，色块填充，动画式褶线 |
 
 **品质锚定使用模板：**
 ```
@@ -272,6 +284,7 @@ Shot on Cinestill 800T, anamorphic lens flares, red halation around neon signs, 
 | 胶片颗粒 + 有机噪点 | 锐利数码电商质感 | 一个要粗糥不完美，一个要完美无瑕 | 根据场景选择；电商禁胶片，影片禁数码锐 |
 | 手持晃动 / Handheld | 绝对对称构图 | 运镜与构图逻辑矛盾 | 对称构图强制用三脚架/云台 |
 | Slow Motion 慢镜头 | Speed Ramp 变速 | 同一时间切片内不可同时慢和加速 | 分时间切片使用，不在同段重叠 |
+| 三渲二Cel-Shade/卡通渲染 | 写实PBR材质/SSS/皮肤毛孔/微瑕疑 | 一个刻意简化光影和材质，一个追求物理精确 | 二选一；三渲二提示词禁用写实材质词 |
 
 **使用规则：**
 - Claude 在 Step 3 组装提示词时必须交叉检查本矩阵

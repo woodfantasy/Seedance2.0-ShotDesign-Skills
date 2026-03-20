@@ -12,7 +12,8 @@ sys.path.insert(0, os.path.dirname(__file__))
 from validate_prompt import (
     check_length, check_time_slices,
     check_camera_language, check_cgi_words, check_asset_refs,
-    check_conflict, validate_prompt, _detect_declared_duration
+    check_conflict, validate_prompt, _detect_declared_duration,
+    detect_language
 )
 
 
@@ -35,6 +36,17 @@ class TestCheckLength(unittest.TestCase):
         results = check_length(text)
         self.assertEqual(results[0]["level"], "warning")
         self.assertEqual(results[0]["code"], "LENGTH_NEAR_LIMIT")
+
+    def test_en_within_limit(self):
+        text = "word " * 100  # 100 words
+        results = check_length(text, lang="en")
+        self.assertEqual(results[0]["level"], "pass")
+
+    def test_en_exceed_limit(self):
+        text = "word " * 1001  # 1001 words
+        results = check_length(text, lang="en")
+        self.assertEqual(results[0]["level"], "error")
+        self.assertEqual(results[0]["code"], "LENGTH_EXCEEDED")
 
 
 
@@ -189,6 +201,19 @@ class TestCheckConflict(unittest.TestCase):
         results = check_conflict(text)
         self.assertTrue(any(r["code"] == "NO_CONFLICT" for r in results))
 
+    def test_style_conflict_celshade_pbr(self):
+        """三渲二/Cel-Shade + 写实PBR材质 = 风格冲突"""
+        text = "三渲二卡通渲染，写实皮肤纹理with visible pores and subsurface scattering"
+        results = check_conflict(text)
+        self.assertTrue(any(r["code"] == "STYLE_CONFLICT" for r in results))
+
+    def test_no_conflict_celshade_alone(self):
+        """纯三渲二提示词，无写实材质 = 无冲突"""
+        text = ("3D Cel-Shaded Toon渲染，Anime风格硬边阴影，"
+                "粗描边轮廓线，高饱和角色色盘")
+        results = check_conflict(text)
+        self.assertTrue(any(r["code"] == "NO_CONFLICT" for r in results))
+
 
 class TestValidatePromptEndToEnd(unittest.TestCase):
     """端到端校验"""
@@ -247,6 +272,36 @@ class TestDurationAwareSlices(unittest.TestCase):
         self.assertEqual(_detect_declared_duration("一只猫在睡觉"), 0)
 
 
+class TestDetectLanguage(unittest.TestCase):
+    """Language auto-detection"""
+
+    def test_chinese_text(self):
+        self.assertEqual(detect_language("赛博朋克城市夜景，航拍俯冲"), "cn")
+
+    def test_english_text(self):
+        self.assertEqual(detect_language("Cyberpunk city night, aerial dive"), "en")
+
+    def test_mixed_mostly_chinese(self):
+        self.assertEqual(detect_language("赛博朋克城市夜景Aerial航拍"), "cn")
+
+    def test_mixed_mostly_english(self):
+        self.assertEqual(detect_language("Cyberpunk night scene, Dolly In push, 特写"), "en")
+
+
+class TestEnglishPromptEndToEnd(unittest.TestCase):
+    """English prompt end-to-end"""
+
+    def test_good_english_prompt_passes(self):
+        prompt = (
+            "15s cyberpunk rain chase, UE5 rendering. "
+            "0-3s: Aerial dive over skyscrapers. "
+            "4-7s: Low angle slow-motion, hero rising. "
+            "8-11s: ECU face detail, rain rolling. "
+            "12-15s: Slow Crane Up, silhouette."
+        )
+        result = validate_prompt(prompt, lang="en")
+        self.assertTrue(result["passed"])
+        self.assertEqual(result["language"], "en")
 
 
 if __name__ == "__main__":

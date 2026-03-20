@@ -233,6 +233,8 @@
 
 ### 二次元变身 / 热血战斗 — 动漫爆燃
 
+> **注意：** 本条目专注于「爆燃战斗 / 变身」场景。若用户需要的是沉稳叙事型的二次元游戏剧情 CG / PV，请使用下方「三渲二 / Cel-Shaded CG」条目。
+
 | 维度 | 参数 |
 |------|------|
 | **构图** | 冲击帧居中放大、速度线汇聚、气场爆发放射状构图 |
@@ -240,6 +242,24 @@
 | **运镜** | Speed Ramp变速 + 定格冲击帧 + 360°环绕 + 急推特写 |
 | **材质** | 赛璐璐上色/3D卡通渲染、粒子爆散特效、能量拖尾 |
 | **提示词模板** | `二次元动漫爆燃风格，变身光效爆发，速度线汇聚，冲击帧定格放大，极高饱和色彩，能量粒子拖尾，Speed Ramp从慢动作突然加速，气场冲击波扩散` |
+
+### 三渲二 / Cel-Shaded CG — 动画化游戏剧情
+
+> **定位：** 用于游戏剧情CG、PV预告、角色传记、过场动画等沉稳叙事场景。与上方「二次元爆燃」的核心区别：这里追求的是「电影级叙事 + 动画化渲染」，而非「节奏爆炸 + 特效堆叠」。
+>
+> **代表作参考风格：** 《原神》《崩坏：星穹铁道》《鬼灭之刃》ifotable级）《蓝色禁区》—— 3D建模 + 卡通渲染管线，保留二维动画的手绘美感。
+
+| 维度 | 参数 |
+|------|------|
+| **构图** | 电影级调度（远景建置、中景叙事、特写情感）、画面空间感比写实略简化、注重角色剑影比例 |
+| **光影** | 简化光源、Anime式硬边阴影二值化（sharp shadow cutoff）、强轮廓 Rim Light 分离角色与背景、减少光影渐变层次 |
+| **色调** | 高饱和 Anime 色盘（HSL 精调）、明暗硬边分割、根据角色属性选主色调（火红/冰蓝/暗紫/金色） |
+| **运镜** | 电影级运镜（复用现有运镜体系）、长焦浅景深特写 + 史诗航拍、Orbit环绕角色展示 |
+| **材质** | **动画化材质（核心区别点）：** Cel-shaded flat shading + 描边轮廓线（bold ink outlines）+ Anime头发高光带 + 简化折皱色块填充、**禁用写实 PBR 材质词（毛孔/SSS/微瑕疑）** |
+| **提示词模板** | `3D cel-shaded toon rendering with bold ink outlines, anime-style sharp shadow cutoff, high-saturation character color palette, simplified flat material shading, strong rim light separating character from background, cinematic depth of field with anime bokeh` |
+| **安全提示词** | `3D Cel-Shaded Toon渲染，Anime风格硬边阴影二值化，粗描边轮廓线，高饱和角色色盘，简化平涂材质，强Rim Light分离角色与背景，电影级景深与Anime散景` |
+| **❤️ 与「二次元爆燃」的配合** | 同一角色的叙事性CG用本条目，战斗片段用上方「二次元爆燃」，两者可在同一PV内分段切换 |
+| **❌ 禁止** | 禁用写实材质词（visible pores / subsurface scattering / micro-imperfections）；禁止与写实光追渲染混用 |
 
 ### 小红书种草 — 精致生活感
 

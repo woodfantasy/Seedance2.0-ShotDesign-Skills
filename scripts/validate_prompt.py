@@ -14,15 +14,28 @@ import sys
 import json
 
 
-# Seedance 为中国自研模型，提示词统一使用中文，不再区分语言
+# Seedance 为中国自研模型，同时支持中英文提示词
 
 
-def check_length(text):
-    """检查提示词长度是否合规（中文≤500字符）"""
+def detect_language(text):
+    """检测提示词语言：中文字符占比超30%则为中文，否则为英文"""
+    chinese_chars = sum(1 for c in text if '\u4e00' <= c <= '\u9fff')
+    total_chars = max(len(text.strip()), 1)
+    return "cn" if chinese_chars / total_chars > 0.3 else "en"
+
+
+def check_length(text, lang="cn"):
+    """检查提示词长度是否合规（中文≤500字符 / 英文≤1000词）"""
     results = []
-    length = len(text)
-    max_len = 500
-    unit = "字符"
+
+    if lang == "cn":
+        length = len(text)
+        max_len = 500
+        unit = "字符"
+    else:
+        length = len(text.split())
+        max_len = 1000
+        unit = "words"
 
     if length > max_len:
         results.append({
@@ -355,6 +368,12 @@ def check_conflict(text):
         (["水墨", "ink wash", "宣纸", "写意", "水墨画"],
          ["ue5", "unreal engine", "光追", "ray tracing", "写实渲染"],
          "风格冲突！水墨写意与UE5写实光追互斥，若要融合请用'3D渲染水墨质感'"),
+        (["cel-shad", "toon render", "卡通渲染", "三渲二", "cel shad",
+          "赛璐璐", "cel-shaded", "toon渲染"],
+         ["subsurface scattering", "sss透光", "皮肤毛孔", "visible pores",
+          "micro-imperfections", "微瑕疵", "写实皮肤", "realistic skin"],
+         "风格冲突！三渲二/Cel-Shade卡通渲染与写实PBR材质(SSS/毛孔/微瑕疵)互斥——"
+         "三渲二应使用动画化材质（硬边阴影+色块填充），不要叠加写实材质词"),
     ]
 
     for group_a, group_b, desc in style_conflicts:
@@ -376,10 +395,13 @@ def check_conflict(text):
     return results
 
 
-def validate_prompt(text):
+def validate_prompt(text, lang=None):
     """执行完整校验流程"""
+    if lang is None:
+        lang = detect_language(text)
+
     all_results = []
-    all_results.extend(check_length(text))
+    all_results.extend(check_length(text, lang))
     all_results.extend(check_time_slices(text))
     all_results.extend(check_camera_language(text))
     all_results.extend(check_cgi_words(text))
@@ -392,7 +414,7 @@ def validate_prompt(text):
     infos = [r for r in all_results if r["level"] == "info"]
 
     return {
-        "language": "cn",
+        "language": lang,
         "passed": len(errors) == 0,
         "summary": {
             "errors": len(errors),
@@ -411,7 +433,9 @@ def format_report(validation):
     lines.append("=" * 50)
     lines.append("  Seedance 2.0 提示词审查报告")
     lines.append("=" * 50)
-    lines.append("  语言: 中文")
+    lang = validation.get("language", "cn")
+    lang_display = "中文 (Chinese)" if lang == "cn" else "English"
+    lines.append(f"  语言: {lang_display}")
     lines.append("")
 
     icon_map = {
@@ -449,6 +473,9 @@ def main():
     group.add_argument("--text", type=str, help="提示词文本内容")
     group.add_argument("--file", type=str, help="包含提示词的文件路径")
 
+    parser.add_argument("--lang", type=str, choices=["cn", "en", "auto"],
+                        default="auto",
+                        help="提示词语言 (auto=自动检测, cn=中文, en=英文)")
     parser.add_argument("--json", action="store_true",
                         help="以 JSON 格式输出结果")
 
@@ -460,7 +487,8 @@ def main():
     else:
         text = args.text
 
-    validation = validate_prompt(text)
+    lang = None if args.lang == "auto" else args.lang
+    validation = validate_prompt(text, lang=lang)
 
     if args.json:
         print(json.dumps(validation, ensure_ascii=False, indent=2))
