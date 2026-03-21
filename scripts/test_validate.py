@@ -13,7 +13,7 @@ from validate_prompt import (
     check_length, check_time_slices,
     check_camera_language, check_cgi_words, check_asset_refs,
     check_conflict, validate_prompt, _detect_declared_duration,
-    detect_language, check_ambiguous_terms
+    detect_language, check_ambiguous_terms, validate_multi_segment
 )
 
 
@@ -342,6 +342,65 @@ class TestCheckAmbiguousTerms(unittest.TestCase):
         text = "aerial drone shot over the city"
         results = check_ambiguous_terms(text, lang="en")
         self.assertTrue(any(r["code"] == "NO_AMBIGUOUS_TERMS" for r in results))
+
+
+class TestMultiSegmentValidation(unittest.TestCase):
+    """多段分镜校验"""
+
+    STYLE_LINE = "15秒落日沙漠武术，写实电影质感，暗金暖色调，苍芒孤寂氛围。"
+    LIGHTING = "光影：落日低角度逆光暗金+沙面散射暖光，热浪折射柔化轮廓，暗金暖底调。"
+    NEGATIVE = "禁止：任何文字、字幕、LOGO或水印"
+
+    def _make_segment(self, style=None, lighting=None, negative=None):
+        s = style or self.STYLE_LINE
+        l = lighting or self.LIGHTING
+        n = negative or self.NEGATIVE
+        return (
+            f"{s}\n"
+            f"0-3秒：航拍缓慢下降，广袤沙漠延伸至地平线。\n"
+            f"4-7秒：推轨缓推至中景，武者双手握棍起势。\n"
+            f"8-11秒：侧面跟拍，棍棒横扫掀起扩散。\n"
+            f"12-15秒：缓慢推进背影，画面趋于静止。\n"
+            f"{l}\n"
+            f"音效：风卷沙面、棍棒破空。\n"
+            f"{n}"
+        )
+
+    def test_consistent_segments_pass(self):
+        """风格/光影/禁止项一致的多段应通过跨段检查"""
+        segments = [self._make_segment() for _ in range(4)]
+        result = validate_multi_segment(segments, lang="cn")
+        self.assertEqual(result["segment_count"], 4)
+        self.assertTrue(any(
+            r["code"] == "CROSS_SEGMENT_OK" for r in result["cross_segment"]
+        ))
+
+    def test_inconsistent_style_warns(self):
+        """风格总纲不一致应触发警告"""
+        seg1 = self._make_segment(style="15秒落日沙漠武术，写实电影质感，暗金暖色调。")
+        seg2 = self._make_segment(style="15秒赛博朋克夜景，霾虹灯光，冷蓝色调。")
+        result = validate_multi_segment([seg1, seg2], lang="cn")
+        self.assertTrue(any(
+            r["code"] == "INCONSISTENT_STYLE_ANCHOR" for r in result["cross_segment"]
+        ))
+
+    def test_inconsistent_lighting_warns(self):
+        """光影不一致应触发警告"""
+        seg1 = self._make_segment()
+        seg2 = self._make_segment(lighting="光影：霾虹冷光+湿气折射，冷蓝绿色调。")
+        result = validate_multi_segment([seg1, seg2], lang="cn")
+        self.assertTrue(any(
+            r["code"] == "INCONSISTENT_LIGHTING" for r in result["cross_segment"]
+        ))
+
+    def test_inconsistent_negative_warns(self):
+        """禁止项不一致应触发警告"""
+        seg1 = self._make_segment()
+        seg2 = self._make_segment(negative="禁止：任何文字")
+        result = validate_multi_segment([seg1, seg2], lang="cn")
+        self.assertTrue(any(
+            r["code"] == "INCONSISTENT_NEGATIVE" for r in result["cross_segment"]
+        ))
 
 
 if __name__ == "__main__":

@@ -474,6 +474,93 @@ def check_ambiguous_terms(text, lang="cn"):
     return results
 
 
+def validate_multi_segment(segments, lang=None):
+    """校验多段分镜提示词：逐段独立校验 + 跨段一致性检查。
+    segments: list of str, 每段提示词文本。
+    """
+    if not segments:
+        return {"passed": False, "error": "无提示词段落"}
+
+    if lang is None:
+        lang = detect_language(segments[0])
+
+    per_segment = []
+    for i, seg in enumerate(segments):
+        result = validate_prompt(seg, lang=lang)
+        result["segment"] = i + 1
+        per_segment.append(result)
+
+    # === 跨段一致性检查 ===
+    cross_results = []
+
+    # 1. 风格总纲一致：比较每段的第一行（去除时长前缀后）
+    first_lines = []
+    for seg in segments:
+        line = seg.strip().split('\n')[0] if seg.strip() else ""
+        first_lines.append(line)
+
+    if len(set(first_lines)) > 1:
+        cross_results.append({
+            "level": "warning",
+            "code": "INCONSISTENT_STYLE_ANCHOR",
+            "message": "跨段一致性警告：各段首行风格总纲不一致。"
+                       "多段分镜应使用相同的风格/色调总纲句以确保视觉连贯。"
+        })
+
+    # 2. 光影结构一致：检测包含「光影」或「Lighting」的行
+    def extract_lighting(text):
+        for line in text.strip().split('\n'):
+            if '光影' in line or 'Lighting' in line or 'lighting' in line:
+                return line.strip()
+        return ""
+
+    lighting_lines = [extract_lighting(seg) for seg in segments]
+    non_empty = [l for l in lighting_lines if l]
+    if non_empty and len(set(non_empty)) > 1:
+        cross_results.append({
+            "level": "warning",
+            "code": "INCONSISTENT_LIGHTING",
+            "message": "跨段一致性警告：各段光影描述不一致。"
+                       "多段分镜应保持统一的光影三层结构以确保拼接无缝。"
+        })
+
+    # 3. 禁止项一致：检测包含「禁止」或「Negative」的行
+    def extract_negative(text):
+        for line in text.strip().split('\n'):
+            if '禁止' in line or 'Negative' in line or 'negative' in line:
+                return line.strip()
+        return ""
+
+    neg_lines = [extract_negative(seg) for seg in segments]
+    non_empty_neg = [n for n in neg_lines if n]
+    if non_empty_neg and len(set(non_empty_neg)) > 1:
+        cross_results.append({
+            "level": "warning",
+            "code": "INCONSISTENT_NEGATIVE",
+            "message": "跨段一致性警告：各段禁止项声明不一致。"
+                       "多段分镜应使用统一的禁止项。"
+        })
+
+    if not cross_results:
+        cross_results.append({
+            "level": "pass",
+            "code": "CROSS_SEGMENT_OK",
+            "message": f"跨段一致性检查通过：{len(segments)} 段风格/光影/禁止项一致。"
+        })
+
+    all_passed = all(r["passed"] for r in per_segment)
+    cross_errors = [r for r in cross_results if r["level"] == "error"]
+    overall_passed = all_passed and len(cross_errors) == 0
+
+    return {
+        "language": lang,
+        "segment_count": len(segments),
+        "passed": overall_passed,
+        "per_segment": per_segment,
+        "cross_segment": cross_results
+    }
+
+
 def validate_prompt(text, lang=None):
     """执行完整校验流程"""
     if lang is None:
