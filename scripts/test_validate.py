@@ -58,12 +58,12 @@ class TestCheckTimeSlices(unittest.TestCase):
         self.assertTrue(any(r["code"] == "NO_TIME_SLICES" for r in results))
 
     def test_valid_time_slices_cn(self):
-        text = "0-3秒：画面A；4-8秒：画面B；9-12秒：画面C"
+        text = "0-3秒：画面A；3-8秒：画面B；8-12秒：画面C"
         results = check_time_slices(text)
         self.assertTrue(any(r["code"] == "TIME_SLICES_OK" for r in results))
 
     def test_valid_time_slices_en(self):
-        text = "[0-3s] Scene A; [4-8s] Scene B; [9-12s] Scene C"
+        text = "[0-3s] Scene A; [3-8s] Scene B; [8-12s] Scene C"
         results = check_time_slices(text)
         self.assertTrue(any(r["code"] == "TIME_SLICES_OK" for r in results))
 
@@ -73,7 +73,7 @@ class TestCheckTimeSlices(unittest.TestCase):
         self.assertTrue(any(r["code"] == "TIME_OVERLAP" for r in results))
 
     def test_not_from_zero(self):
-        text = "3-6秒：画面A；7-10秒：画面B"
+        text = "3-6秒：画面A；8-10秒：画面B"
         results = check_time_slices(text)
         self.assertTrue(any(r["code"] == "TIME_NOT_FROM_ZERO" for r in results))
 
@@ -151,7 +151,7 @@ class TestCheckConflict(unittest.TestCase):
     """逻辑冲突检测"""
 
     def test_no_conflict(self):
-        text = "0-3秒：Fast Tracking追逐；4-8秒：Slow Motion慢镜头回顾"
+        text = "0-3秒：Fast Tracking追逐；3-8秒：Slow Motion慢镜头回顾"
         results = check_conflict(text)
         self.assertTrue(any(r["code"] == "NO_CONFLICT" for r in results))
 
@@ -228,9 +228,9 @@ class TestValidatePromptEndToEnd(unittest.TestCase):
         prompt = (
             "15秒赛博朋克暴雨追逐，UnrealEngine5渲染，"
             "0-3秒：Aerial航拍俯冲，摩天楼群刺破铅灰雨云；"
-            "4-7秒：Low Angle仰拍慢镜头，主角从水花中起身；"
-            "8-11秒：微距特写面部雨水滚落，Handheld抖动；"
-            "12-15秒：Slow Crane Up仰拍。"
+            "3-7秒：Low Angle仰拍慢镜头，主角从水花中起身；"
+            "7-11秒：微距特写面部雨水滚落，Handheld抖动；"
+            "11-15秒：Slow Crane Up仰拍。"
         )
         result = validate_prompt(prompt)
         self.assertTrue(result["passed"])
@@ -268,7 +268,7 @@ class TestDurationAwareSlices(unittest.TestCase):
 
     def test_duration_mismatch(self):
         """声明15秒但切片只到10秒"""
-        text = "15秒赛博朋克夜景，0-3秒：画面A；4-7秒：画面B；8-10秒：画面C"
+        text = "15秒赛博朋克夜景，0-3秒：画面A；3-7秒：画面B；7-10秒：画面C"
         results = check_time_slices(text)
         self.assertTrue(any(r["code"] == "DURATION_MISMATCH" for r in results))
 
@@ -301,9 +301,9 @@ class TestEnglishPromptEndToEnd(unittest.TestCase):
         prompt = (
             "15s cyberpunk rain chase, UE5 rendering. "
             "0-3s: Aerial drone shot dive over skyscrapers. "
-            "4-7s: Low angle shot slow-motion, hero rising. "
-            "8-11s: ECU face detail, rain rolling. "
-            "12-15s: Slow crane shot up, silhouette."
+            "3-7s: Low angle shot slow-motion, hero rising. "
+            "7-11s: ECU face detail, rain rolling. "
+            "11-15s: Slow crane shot up, silhouette."
         )
         result = validate_prompt(prompt, lang="en")
         self.assertTrue(result["passed"])
@@ -358,9 +358,9 @@ class TestMultiSegmentValidation(unittest.TestCase):
         return (
             f"{s}\n"
             f"0-3秒：航拍缓慢下降，广袤沙漠延伸至地平线。\n"
-            f"4-7秒：推轨缓推至中景，武者双手握棍起势。\n"
-            f"8-11秒：侧面跟拍，棍棒横扫掀起扩散。\n"
-            f"12-15秒：缓慢推进背影，画面趋于静止。\n"
+            f"3-7秒：推轨缓推至中景，武者双手握棍起势。\n"
+            f"7-11秒：侧面跟拍，棍棒横扫掀起扩散。\n"
+            f"11-15秒：缓慢推进背影，画面趋于静止。\n"
             f"{l}\n"
             f"音效：风卷沙面、棍棒破空。\n"
             f"{n}"

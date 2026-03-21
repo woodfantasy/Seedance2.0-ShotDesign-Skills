@@ -121,7 +121,7 @@ def check_time_slices(text):
                 "level": "error",
                 "code": "LONG_VIDEO_NO_SLICES",
                 "message": f"声明时长 {declared_duration}秒 但未使用时间切片！"
-                           f"超过5秒的视频必须使用时序切片（如 0-3秒：...；4-7秒：...），"
+                           f"超过5秒的视频必须使用时序切片（如 0-3秒：...；3-7秒：...），"
                            f"否则画面动作会揉作一团。"
             })
         else:
