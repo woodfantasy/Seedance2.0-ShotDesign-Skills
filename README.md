@@ -185,7 +185,7 @@ python scripts/validate_prompt.py --text "your prompt" --lang en
 python scripts/validate_prompt.py --text "提示词" --json
 ```
 
-**校验项（v1.3）：**
+**校验项（v1.4）：**
 - ❌ 字数超标（中文>500字符 / 英文>1000词）
 - ❌ 缺少专业运镜术语
 - ❌ 废话词硬阻断（masterpiece/杰作/超清晰等 → error）
