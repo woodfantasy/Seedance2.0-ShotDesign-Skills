@@ -4,17 +4,29 @@ validate_prompt.py 的测试用例
 运行: python -m pytest scripts/test_validate.py -v
 """
 
-import sys
 import os
 import unittest
+import importlib.util
 
-sys.path.insert(0, os.path.dirname(__file__))
-from validate_prompt import (
-    check_length, check_time_slices,
-    check_camera_language, check_cgi_words, check_asset_refs,
-    check_conflict, validate_prompt, _detect_declared_duration,
-    detect_language, check_ambiguous_terms, validate_multi_segment
+# 使用 importlib 加载同目录模块（避免 sys.path 操作）
+_spec = importlib.util.spec_from_file_location(
+    "validate_prompt",
+    os.path.join(os.path.dirname(__file__), "validate_prompt.py")
 )
+_module = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(_module)
+
+check_length = _module.check_length
+check_time_slices = _module.check_time_slices
+check_camera_language = _module.check_camera_language
+check_cgi_words = _module.check_cgi_words
+check_asset_refs = _module.check_asset_refs
+check_conflict = _module.check_conflict
+validate_prompt = _module.validate_prompt
+_detect_declared_duration = _module._detect_declared_duration
+detect_language = _module.detect_language
+check_ambiguous_terms = _module.check_ambiguous_terms
+validate_multi_segment = _module.validate_multi_segment
 
 
 class TestCheckLength(unittest.TestCase):

@@ -662,7 +662,7 @@ def main():
     else:
         print(format_report(validation))
 
-    sys.exit(0 if validation["passed"] else 1)
+    raise SystemExit(0 if validation["passed"] else 1)
 
 
 if __name__ == "__main__":
