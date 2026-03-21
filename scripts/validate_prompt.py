@@ -411,6 +411,69 @@ def check_conflict(text):
     return results
 
 
+def check_ambiguous_terms(text, lang="cn"):
+    """检测可能触发 Seedance 审核的裸英文运镜术语（可被误判为人名/品牌名）"""
+    results = []
+    # 高风险裸词：可作为人名/品牌名
+    high_risk = {
+        "Dolly": "推轨推进 / dolly tracking shot",
+        "Aerial": "航拍 / aerial drone shot",
+        "Crane": "摇臂升降 / crane shot",
+        "Pan": "水平摇摄 / pan shot",
+        "Arc": "弧形环绕 / arc shot",
+        "Dutch": "荷兰角倾斜 / dutch angle shot",
+        "Steadicam": "斯坦尼康稳定 / steadicam stabilized shot",
+    }
+    # 安全后缀：如果裸词后面紧跟这些词，说明上下文明确，风险降低
+    safe_suffixes = [
+        "shot", "camera", "movement", "drone", "tracking",
+        "angle", "stabilized", "jib", "in", "out", "up", "down",
+        "left", "right", "zoom", "back", "forward"
+    ]
+
+    found = []
+    for bare_word, safe_alt in high_risk.items():
+        # 用正则查找裸词（前后非英文字母，不区分大小写）
+        pattern = r'(?<![a-zA-Z])' + re.escape(bare_word) + r'(?![a-zA-Z])'
+        matches = list(re.finditer(pattern, text, re.IGNORECASE))
+        for m in matches:
+            # 检查后面是否有安全后缀
+            after = text[m.end():m.end()+20].strip().lower()
+            has_safe_suffix = any(after.startswith(s) for s in safe_suffixes)
+            if not has_safe_suffix:
+                found.append((bare_word, safe_alt))
+                break  # 每个裸词只报一次
+
+    if found:
+        if lang == "cn":
+            word_list = ", ".join(f"`{w}`" for w, _ in found)
+            alt_list = "; ".join(f"{w}→{a.split(' / ')[0]}" for w, a in found)
+            results.append({
+                "level": "warning",
+                "code": "AMBIGUOUS_CAMERA_TERM",
+                "message": f"检测到裸英文运镜词 {word_list}，"
+                           f"Seedance 可能误判为人名而触发违规。"
+                           f"建议改用中文：{alt_list}"
+            })
+        else:
+            word_list = ", ".join(f"`{w}`" for w, _ in found)
+            alt_list = "; ".join(f"{w}→{a.split(' / ')[1]}" for w, a in found)
+            results.append({
+                "level": "warning",
+                "code": "AMBIGUOUS_CAMERA_TERM",
+                "message": f"Bare camera terms {word_list} detected — "
+                           f"Seedance may flag these as person names. "
+                           f"Use full phrases: {alt_list}"
+            })
+    else:
+        results.append({
+            "level": "pass",
+            "code": "NO_AMBIGUOUS_TERMS",
+            "message": "未检测到审核风险裸英文运镜词。"
+        })
+    return results
+
+
 def validate_prompt(text, lang=None):
     """执行完整校验流程"""
     if lang is None:
@@ -423,6 +486,7 @@ def validate_prompt(text, lang=None):
     all_results.extend(check_cgi_words(text))
     all_results.extend(check_asset_refs(text))
     all_results.extend(check_conflict(text))
+    all_results.extend(check_ambiguous_terms(text, lang))
 
     errors = [r for r in all_results if r["level"] == "error"]
     warnings = [r for r in all_results if r["level"] == "warning"]

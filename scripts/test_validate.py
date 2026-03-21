@@ -13,7 +13,7 @@ from validate_prompt import (
     check_length, check_time_slices,
     check_camera_language, check_cgi_words, check_asset_refs,
     check_conflict, validate_prompt, _detect_declared_duration,
-    detect_language
+    detect_language, check_ambiguous_terms
 )
 
 
@@ -300,14 +300,48 @@ class TestEnglishPromptEndToEnd(unittest.TestCase):
     def test_good_english_prompt_passes(self):
         prompt = (
             "15s cyberpunk rain chase, UE5 rendering. "
-            "0-3s: Aerial dive over skyscrapers. "
-            "4-7s: Low angle slow-motion, hero rising. "
+            "0-3s: Aerial drone shot dive over skyscrapers. "
+            "4-7s: Low angle shot slow-motion, hero rising. "
             "8-11s: ECU face detail, rain rolling. "
-            "12-15s: Slow Crane Up, silhouette."
+            "12-15s: Slow crane shot up, silhouette."
         )
         result = validate_prompt(prompt, lang="en")
         self.assertTrue(result["passed"])
         self.assertEqual(result["language"], "en")
+
+
+class TestCheckAmbiguousTerms(unittest.TestCase):
+    """审核风险裸英文运镜词检测"""
+
+    def test_bare_dolly_in_cn_warns(self):
+        """中文提示词中裸写 Dolly 应触发警告"""
+        text = "Dolly穿过寺门进入庭院"
+        results = check_ambiguous_terms(text, lang="cn")
+        self.assertTrue(any(r["code"] == "AMBIGUOUS_CAMERA_TERM" for r in results))
+
+    def test_dolly_tracking_shot_en_passes(self):
+        """英文提示词中 dolly tracking shot 完整短语应通过"""
+        text = "dolly tracking shot slowly pushing forward"
+        results = check_ambiguous_terms(text, lang="en")
+        self.assertTrue(any(r["code"] == "NO_AMBIGUOUS_TERMS" for r in results))
+
+    def test_chinese_camera_words_pass(self):
+        """纯中文运镜词应通过"""
+        text = "航拍缓慢推进，推轨穿过寺门，摇臂升降揭示仙境"
+        results = check_ambiguous_terms(text, lang="cn")
+        self.assertTrue(any(r["code"] == "NO_AMBIGUOUS_TERMS" for r in results))
+
+    def test_bare_aerial_in_en_warns(self):
+        """英文提示词中裸写 Aerial 无后缀应触发警告"""
+        text = "Aerial slow descent through clouds"
+        results = check_ambiguous_terms(text, lang="en")
+        self.assertTrue(any(r["code"] == "AMBIGUOUS_CAMERA_TERM" for r in results))
+
+    def test_aerial_drone_shot_en_passes(self):
+        """英文 aerial drone shot 完整短语应通过"""
+        text = "aerial drone shot over the city"
+        results = check_ambiguous_terms(text, lang="en")
+        self.assertTrue(any(r["code"] == "NO_AMBIGUOUS_TERMS" for r in results))
 
 
 if __name__ == "__main__":
