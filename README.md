@@ -9,7 +9,7 @@ English | [中文](README.zh-CN.md) | [日本語](README.ja.md) | [한국어](RE
 <p align="center"><strong>Mode-aware directing, prompt design, extension, and editing for Jimeng Seedance 2.5</strong></p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-3.0.0-blue.svg" alt="Version 3.0.0">
+  <img src="https://img.shields.io/badge/version-3.1.0-blue.svg" alt="Version 3.1.0">
   <img src="https://img.shields.io/badge/license-MIT--0-green.svg" alt="MIT-0 License">
   <img src="https://img.shields.io/badge/platform-Seedance_2.5-purple.svg" alt="Seedance 2.5">
 </p>
@@ -31,6 +31,15 @@ Seedance Shot Design turns a rough video idea or an approved source clip into a 
 | Localization | Native directing language; dialogue is explicitly bound to speaker and target language |
 
 The skill deliberately removes obsolete assumptions: no forced split above 15 seconds, no 9/3/3/12 mixed-file rule, no universal 500-character ceiling, no forced English for non-Chinese users, and no undocumented 1080p or CLI claims.
+
+## What's new in 3.1
+
+| Area | Enhancement |
+|---|---|
+| First-use onboarding | Automatic quick-start guide, minimum input template, and representative examples on first invocation |
+| Official examples | Curated reference examples from official ByteDance / Dreamina documentation for structure anchoring |
+| One-click install | `npx --yes skills@latest add` support alongside manual git clone |
+| Timestamp-30s routing | Dedicated routing for exact 30-second videos requiring precise per-second timeline control |
 
 ## Core workflow
 
@@ -83,10 +92,20 @@ Place this folder in the skills directory used by your agent host. Common exampl
 .cursor/skills/seedance-shot-design/
 ```
 
+### Quick install (recommended)
+
+With Node.js installed:
+
+```bash
+npx --yes skills@latest add woodfantasy/Seedance-ShotDesign-Skills -g -y
+```
+
+### Manual install
+
 The repository currently remains available at its existing URL:
 
 ```bash
-git clone https://github.com/woodfantasy/Seedance2.0-ShotDesign-Skills.git seedance-shot-design
+git clone https://github.com/woodfantasy/Seedance-ShotDesign-Skills.git seedance-shot-design
 ```
 
 Invoke it explicitly when desired:
@@ -163,7 +182,10 @@ seedance-shot-design/
 │   ├── micro-expressions.md
 │   ├── audio-tags.md
 │   ├── director-styles.md
-│   └── scenarios.md
+│   ├── scenarios.md
+│   ├── failure-diagnosis.md
+│   ├── first-use-onboarding.md
+│   └── official-examples.md
 └── scripts/
     ├── validate_prompt.py
     └── test_validate.py

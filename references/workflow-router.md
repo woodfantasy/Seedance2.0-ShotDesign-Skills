@@ -27,6 +27,7 @@ Infer answers already present in the request. Ask only when two plausible modes 
 |---|---|---|
 | New video, 4–30s | Standard generation | Native single-generation range |
 | New video, exactly 30s | Standard by default | Greater short-form precision; use ultra-long only when requested |
+| New video, exactly 30s with precise per-second or per-frame timeline | Standard + timestamp-30s | Apply the complex 30-second prompt contract with full timestamp beats |
 | New continuous video, 31–180s | Ultra-long video | Native long-form path, no mandatory splitting |
 | Existing approved clip, user wants what happens next/before | Video extension | Preserves original and generates only the added interval |
 | Existing clip, target/object/style/time should change | Smart/video edit | Modification rather than continuation |

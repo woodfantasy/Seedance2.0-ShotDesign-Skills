@@ -7,7 +7,7 @@
 <p align="center"><strong>Direção, prompts, extensão e edição com roteamento por modo para Jimeng Seedance 2.5</strong></p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-3.0.0-blue.svg" alt="Versão 3.0.0">
+  <img src="https://img.shields.io/badge/version-3.1.0-blue.svg" alt="Versão 3.1.0">
   <img src="https://img.shields.io/badge/license-MIT--0-green.svg" alt="MIT-0">
   <img src="https://img.shields.io/badge/platform-Seedance_2.5-purple.svg" alt="Seedance 2.5">
 </p>
@@ -27,6 +27,15 @@ Seedance Shot Design transforma uma ideia ou vídeo aprovado em plano de produç
 | Produção | Transferência criativa, chroma key, white model bruto/fino, transição contínua e storyboard multipainel |
 
 Foram removidas as regras antigas: divisão obrigatória acima de 15 s, limite misto 9/3/3/12, teto universal de 500 caracteres, inglês forçado e alegações não verificadas de 1080p ou CLI.
+
+## Novidades da 3.1
+
+| Área | Melhoria |
+|---|---|
+| Guia de primeiro uso | Guia rápido, modelo mínimo e exemplos representativos na primeira invocação |
+| Exemplos oficiais | Exemplos de referência da documentação oficial ByteDance / Dreamina |
+| Instalação rápida | Suporte a instalação com `npx --yes skills@latest add` |
+| Linha do tempo precisa | Roteamento dedicado para vídeos de exatamente 30 s com controle por segundo |
 
 ## Modos compatíveis
 
@@ -52,6 +61,14 @@ Foram removidas as regras antigas: divisão obrigatória acima de 15 s, limite m
 6. Valida pelo modo e entrega um prompt autocontido.
 
 ## Instalação
+
+### Instalação rápida (recomendada)
+
+```bash
+npx --yes skills@latest add woodfantasy/Seedance-ShotDesign-Skills -g -y
+```
+
+### Instalação manual
 
 Coloque a pasta no diretório de skills do agente:
 

@@ -7,7 +7,7 @@
 <p align="center"><strong>Jimeng Seedance 2.5 向けのモード認識型演出・プロンプト・延長・編集スキル</strong></p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-3.0.0-blue.svg" alt="Version 3.0.0">
+  <img src="https://img.shields.io/badge/version-3.1.0-blue.svg" alt="Version 3.1.0">
   <img src="https://img.shields.io/badge/license-MIT--0-green.svg" alt="MIT-0">
   <img src="https://img.shields.io/badge/platform-Seedance_2.5-purple.svg" alt="Seedance 2.5">
 </p>
@@ -27,6 +27,15 @@ Seedance Shot Design は、曖昧なアイデアや承認済みの素材を、Se
 | 制作 | クリエイティブ転送、グリーンバック、粗/精細ホワイトモデル、シームレス遷移、絵コンテ |
 
 旧仕様の「15秒超を強制分割」「9/3/3/12素材上限」「500文字上限」「非中国語を英語へ強制」「未確認の1080p/CLI主張」は削除しました。
+
+## 3.1 の新機能
+
+| 領域 | 内容 |
+|---|---|
+| 初回利用ガイド | 初回起動時にクイックスタート、最小入力テンプレート、代表例を自動表示 |
+| 公式サンプル | ByteDance / Dreamina 公式ドキュメントからの構造参照例を収録 |
+| ワンクリックインストール | `npx --yes skills@latest add` によるインストールに対応 |
+| 精密タイムライン | 正確な30秒動画で秒単位のタイムライン制御が必要な場合の専用ルーティング |
 
 ## 対応モード
 
@@ -52,6 +61,14 @@ Seedance Shot Design は、曖昧なアイデアや承認済みの素材を、Se
 6. モード別に検証し、自己完結したプロンプトを返します。
 
 ## インストール
+
+### 推奨：ワンクリックインストール
+
+```bash
+npx --yes skills@latest add woodfantasy/Seedance-ShotDesign-Skills -g -y
+```
+
+### 手動インストール
 
 フォルダーを利用するエージェントのスキルディレクトリに配置します。
 

@@ -9,7 +9,7 @@
 <p align="center"><strong>面向即梦 Seedance 2.5 的模式感知导演、提示词、延长与编辑技能</strong></p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-3.0.0-blue.svg" alt="版本 3.0.0">
+  <img src="https://img.shields.io/badge/version-3.1.0-blue.svg" alt="版本 3.1.0">
   <img src="https://img.shields.io/badge/license-MIT--0-green.svg" alt="MIT-0 协议">
   <img src="https://img.shields.io/badge/platform-Seedance_2.5-purple.svg" alt="Seedance 2.5">
 </p>
@@ -31,6 +31,15 @@ Seedance Shot Design 能把模糊创意或已经确认的源视频，转化为�
 | 本地化 | 使用用户的自然工作语言；每句对白绑定角色、语言和字幕状态 |
 
 技能已移除会导致 2.5 输出错误的旧假设：不再把超过 15 秒的任务强制拆段，不再使用 9/3/3/12 混合素材上限，不再强制 500 字符上限，不再把非中文请求统一翻成英文，也不再宣称手册未确认的 1080p 或 CLI 能力。
+
+## 3.1 新增
+
+| 能力 | 说明 |
+|---|---|
+| 首次使用引导 | 首次调用时自动展示快速入门、最小输入模板和代表性示例 |
+| 官方示例参考 | 收录来自字节跳动 / 即梦官方文档的结构参考示例 |
+| 一键安装 | 支持 `npx --yes skills@latest add` 一键安装，同时保留手动 git clone |
+| 精确时间轴路由 | 为恰好 30 秒且需要逐秒时间轴控制的任务增加专用路由 |
 
 ## 核心工作流
 
@@ -83,10 +92,20 @@ flowchart LR
 .cursor/skills/seedance-shot-design/
 ```
 
+### 推荐：一行安装
+
+已安装 Node.js 的用户：
+
+```bash
+npx --yes skills@latest add woodfantasy/Seedance-ShotDesign-Skills -g -y
+```
+
+### 手动安装
+
 仓库目前仍沿用原地址：
 
 ```bash
-git clone https://github.com/woodfantasy/Seedance2.0-ShotDesign-Skills.git seedance-shot-design
+git clone https://github.com/woodfantasy/Seedance-ShotDesign-Skills.git seedance-shot-design
 ```
 
 需要时可明确调用：
@@ -163,7 +182,10 @@ seedance-shot-design/
 │   ├── micro-expressions.md
 │   ├── audio-tags.md
 │   ├── director-styles.md
-│   └── scenarios.md
+│   ├── scenarios.md
+│   ├── failure-diagnosis.md
+│   ├── first-use-onboarding.md
+│   └── official-examples.md
 └── scripts/
     ├── validate_prompt.py
     └── test_validate.py

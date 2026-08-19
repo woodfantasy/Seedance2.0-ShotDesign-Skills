@@ -7,6 +7,14 @@ description: Design production-ready prompts, shot plans, storyboards, extension
 
 Act as a virtual director, storyboard artist, and Seedance 2.5 prompt engineer. Convert a rough idea or source clip into a mode-correct, production-ready prompt that can be pasted into Jimeng. Optimize for instruction adherence, temporal control, continuity, edit preservation, physical plausibility, and clear asset binding.
 
+## First-use onboarding
+
+1. On the first invocation in the current conversation, read [first-use-onboarding.md](references/first-use-onboarding.md) and display its quick-start guide, minimum input template, and representative examples before the task output.
+2. Do not require the user to repeat the request. Process the original request immediately after displaying the guide.
+3. If reliable cross-session state is unavailable, use "first invocation in the current conversation" as the trigger. Do not claim permanent completion tracking.
+4. After the guide has been shown in the current conversation, do not repeat it unless the user asks for help, the tutorial, or examples.
+5. The onboarding guide teaches usage only. It must not silently replace the user's requested duration, ratio, assets, dialogue, operation, or deliverable.
+
 ## Source discipline
 
 1. Read [seedance-specs.md](references/seedance-specs.md) before giving platform limits or UI settings.
@@ -29,6 +37,7 @@ Read [workflow-router.md](references/workflow-router.md), then select one primar
 | User intent | Primary mode |
 |---|---|
 | Create a new 4–30s video | Standard generation: 全能参考 / 首尾帧 |
+| Exactly 30s with precise per-second timeline control | Standard generation + timestamp-30s |
 | Create a continuous 30–180s video | 超长视频 |
 | Continue an approved source video | 视频延长 |
 | Change or remove content in a video | 智能编辑 / 高级编辑 / 视频编辑 |
@@ -40,7 +49,7 @@ Read [workflow-router.md](references/workflow-router.md), then select one primar
 | Fill the gap between two finished clips | 视频无缝转场 |
 | Animate a multi-panel storyboard | 多宫格分镜 |
 
-At exactly 30 seconds, prefer standard generation for precise short-form work unless the user explicitly wants 超长视频. For 31–60 seconds with no approved base clip, prefer 超长视频. Use 视频延长 when the source clip itself is an asset worth preserving or the user wants iterative control. Split only when the target exceeds 180 seconds, the user wants episodic approval, or separate generations are creatively necessary.
+At exactly 30 seconds, prefer standard generation for precise short-form work unless the user explicitly wants 超长视频. When the user requests exact per-second or per-frame timeline control at 30 seconds, apply the timestamp-30s variant with the complex 30-second prompt contract. For 31–60 seconds with no approved base clip, prefer 超长视频. Use 视频延长 when the source clip itself is an asset worth preserving or the user wants iterative control. Split only when the target exceeds 180 seconds, the user wants episodic approval, or separate generations are creatively necessary.
 
 ## Six-step workflow
 
@@ -69,6 +78,7 @@ Read conditionally:
 
 | Signal | Read |
 |---|---|
+| First invocation in conversation or user asks for help/tutorial | [first-use-onboarding.md](references/first-use-onboarding.md) |
 | 30–180s story, complex 30s narrative, long one-take | [long-form-storytelling.md](references/long-form-storytelling.md) |
 | Many assets, multi-character, voice, audio-only, creative transfer | [multimodal-references.md](references/multimodal-references.md) |
 | Smart/advanced edit, BGM removal, viewpoint change | [video-editing.md](references/video-editing.md) |
@@ -80,6 +90,7 @@ Read conditionally:
 | Genre or vertical use case | [scenarios.md](references/scenarios.md) and [director-styles.md](references/director-styles.md) |
 | Multi-shot project needing cross-shot visual consistency | [prompt-contracts.md](references/prompt-contracts.md) § Keyframe-first two-stage generation |
 | Generation result did not match intent, iterative fix needed | [failure-diagnosis.md](references/failure-diagnosis.md) |
+| Need official example as structure reference, or optimizing/diagnosing a prompt | [official-examples.md](references/official-examples.md) |
 
 Extract concrete phrases or structures from the selected references. Do not merely name a style library without applying it.
 

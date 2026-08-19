@@ -7,7 +7,7 @@
 <p align="center"><strong>Jimeng Seedance 2.5용 모드 인식 연출·프롬프트·연장·편집 스킬</strong></p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-3.0.0-blue.svg" alt="Version 3.0.0">
+  <img src="https://img.shields.io/badge/version-3.1.0-blue.svg" alt="Version 3.1.0">
   <img src="https://img.shields.io/badge/license-MIT--0-green.svg" alt="MIT-0">
   <img src="https://img.shields.io/badge/platform-Seedance_2.5-purple.svg" alt="Seedance 2.5">
 </p>
@@ -27,6 +27,15 @@ Seedance Shot Design은 아이디어나 승인된 원본 영상을 Seedance 2.5�
 | 제작 | 크리에이티브 전이, 그린스크린, 거친/정밀 화이트 모델, 심리스 전환, 멀티패널 스토리보드 |
 
 15초 초과 강제 분할, 9/3/3/12 혼합 에셋 제한, 보편적 500자 제한, 비중국어의 영어 강제 변환, 확인되지 않은 1080p 및 CLI 주장은 제거했습니다.
+
+## 3.1 새로운 기능
+
+| 영역 | 내용 |
+|---|---|
+| 첫 사용 가이드 | 첫 호출 시 빠른 시작, 최소 입력 템플릿, 대표 예시 자동 표시 |
+| 공식 예시 | ByteDance / Dreamina 공식 문서의 구조 참조 예시 수록 |
+| 원클릭 설치 | `npx --yes skills@latest add` 설치 지원 |
+| 정밀 타임라인 | 정확히 30초 영상에서 초 단위 타임라인 제어가 필요한 경우 전용 라우팅 |
 
 ## 지원 모드
 
@@ -52,6 +61,14 @@ Seedance Shot Design은 아이디어나 승인된 원본 영상을 Seedance 2.5�
 6. 모드별 검증 후 완전한 복사용 프롬프트를 제공합니다.
 
 ## 설치
+
+### 추천: 원클릭 설치
+
+```bash
+npx --yes skills@latest add woodfantasy/Seedance-ShotDesign-Skills -g -y
+```
+
+### 수동 설치
 
 폴더를 사용하는 에이전트의 스킬 디렉터리에 배치하세요.
 
